@@ -6,6 +6,7 @@ library(patchwork)
 library(ggforce)
 library(gganimate)
 library(psych)
+library(here)
 
 # load in data from https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-08-18 ----
 actions <- data.table::fread("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-08-18/actions.csv")
@@ -60,7 +61,7 @@ ggplot(plants, aes(group, fill = red_list_category)) +
   geom_bar(position = 'dodge') + coord_flip() + 
   labs(title = "Plant groups going extinct")
 # and where
-ggplot(plants, aes(group, fill = continent)) + 
+extinctPlot <- ggplot(plants, aes(group, fill = continent)) + 
   geom_bar(position = 'dodge') + coord_flip() + 
   labs(title = "Where are plant groups going extinct")
 
@@ -71,11 +72,19 @@ actions_filt <- actions %>%
   group_by(continent, group, action_type) %>%
   summarise(count = n())
 
-ggplot(actions_filt, aes(action_type, count, fill = group)) + 
+actPlot <- ggplot(actions_filt, aes(action_type, count, fill = group)) + 
   geom_bar(position = 'dodge', stat = 'identity') +
   facet_grid(rows = vars(continent)) +
   coord_flip() + labs(title = 'What action is being taken on each contient')
 
 # threats
-ggplot(threatsAgg, aes(threat_type, count, fill = continent)) + 
-  geom_bar(stat = 'identity', position = 'dodge') + coord_flip()
+threatPlot <- ggplot(threatsAgg, aes(threat_type, count, fill = continent)) + 
+  geom_bar(stat = 'identity', position = 'dodge') + coord_flip() +
+  labs(title = "What are the threats")
+
+# put together
+
+plantsPlots <- actPlot + threatPlot / extinctPlot
+
+ggsave(filename = here('PlantsDanger-2020-08-18', 'plants.PNG'), plot = plantsPlots,
+       height = 12, width = 16)
