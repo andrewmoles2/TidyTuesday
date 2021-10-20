@@ -3,3 +3,10 @@
 ## 2020-01-07 - Australia temperature and rainfall
 ![](Australia-fires-2020-01-07/Auz_Rain&Temp.gif)
 
+## 2021-08-24 - Lemurs
+![](Lemurs_2021-08-24/lemur_plots.png)
+
+## 2021-10-19 - Pumpkins!
+![](pumpkins-2021-10-19/giant_pumpkin_avg.png)
+![](pumpkins-2021-10-19/pumpkins_weight.png)
+

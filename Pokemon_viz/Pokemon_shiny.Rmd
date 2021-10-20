@@ -1,0 +1,175 @@
+---
+title: "Pokémon Data Exploration"
+author: "Andrew Moles"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    social: menu
+    source_code: embed
+    theme:
+      version: 4
+      bootswatch: minty
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(shinyWidgets)
+```
+
+```{r global, include=FALSE}
+library(tidyverse)
+library(RColorBrewer)
+library(gganimate)
+library(ggforce)
+library(patchwork)
+library(magick)
+library(here)
+library(data.table)
+library(janitor)
+
+pokemon_raw <- fread("https://raw.githubusercontent.com/andrewmoles2/webScraping/main/R/data/pokemon.csv") %>%
+  clean_names()
+
+# type colours
+type_col <- c(Bug = "#6a8b5a", Dark = "#414152", Dragon = "#5a8bee", 
+              Electric = "#f6e652", Fairy = "#ffd5bd", Fighting = "#b40000", 
+              Fire = "#ee8329", Flying = "#6ab4e6", Ghost = "#8b6283", Grass = "#20b49c", 
+              Ground = "#c57341", Ice = "#e6e6f6", Normal = "#E8E8E8", 
+              Poison = "#a483c5", Psychic = "#f65273", Rock = "#e6d5ac", 
+              Steel = "#A1A1A1", Water = "#083962")
+
+scales::show_col(type_col)
+
+# Turn certain cols to factors
+fact <- c("type1", "type2", "gen")
+
+pokemon_raw <- pokemon_raw %>%
+  mutate(across(all_of(fact), as_factor),
+         type1 = fct_relevel(type1, sort),
+         type2 = fct_relevel(type2, sort)) 
+
+# make ggplot theme
+theme_andrew <- function(){
+  font <- "Avenir" 
+  
+  theme_bw() %+replace%  # replace elements of theme to change
+    
+    theme(
+      
+      # modify border/grid
+      panel.border = element_rect(
+        fill = NA,
+        linetype = 3),
+      panel.grid = element_line(
+        linetype = 3,
+        size = 0.25),
+      
+      # change text
+      plot.title = element_text(
+        family = font,
+        size = 16,
+        face = 'bold',
+        hjust = 0,
+        vjust = 2),
+      plot.subtitle = element_text(
+        family = font,
+        size = 10,
+        hjust = 0,
+        vjust = 2,
+        colour = "#F1945E"),
+      plot.caption = element_text(
+        family = font,
+        size = 9,
+        hjust = 1),
+      axis.title = element_text(
+        family = font,
+        size = 10),
+      axis.text =  element_text(
+        family = font,
+        size = 9)
+    )    
+}
+
+theme_set(theme_andrew())
+```
+
+
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+
+
+```{r}
+#selectInput("gen", label = h3("Generation"),
+            #choices = c(levels(pokemon_raw$gen)),
+            #selected = 1)
+
+pickerInput("gen", label = h3("Generation"),
+            choices = c(levels(pokemon_raw$gen)),
+            selected = 1, 
+            options = list(`actions-box` = TRUE),
+            multiple = T)
+```
+
+The Pokemon data currently has 8 *generations*. 
+
+
+Rows
+-----------------------------------------------------------------------
+
+### Type 1
+
+```{r}
+renderPlot({
+pokemon_raw %>%
+  filter(gen == input$gen) %>%
+  ggplot(aes(x = type1, fill = type1)) +
+  geom_bar(colour = 'black') + 
+  scale_fill_manual(values = type_col) +
+  labs(title = "Count of Pokémon first typing",
+       fill = "Pokémons Type") +
+  coord_flip() 
+})
+```
+
+### Type 2
+```{r}
+renderPlot({
+pokemon_raw %>%
+  tidyr::drop_na(type2) %>%
+  filter(gen == input$gen) %>%
+  ggplot(aes(x = type2, fill = type2)) +
+  geom_bar(colour = 'black') + 
+  scale_fill_manual(values = type_col) +
+  labs(title = "Count of Pokémon second typing",
+       fill = "Pokémons Type") +
+  coord_flip() 
+})
+```
+
+Rows {data-width=900}
+-----------------------------------------------------------------------
+
+### Average Stats 
+
+```{r}
+renderPlot({
+  
+type_agg <- pokemon_raw %>%
+  group_by(gen, type1) %>%
+  summarise(hp = median(hp),
+            attack = median(attack),
+            defense = median(defense),
+            sp_atk = median(sp_atk),
+            sp_def = median(sp_def),
+            speed = median(speed)) %>%
+  pivot_longer(!c(gen, type1), names_to = "avg_stat", values_to = "median")
+
+type_agg %>%
+  filter(gen == input$gen) %>%
+  ggplot(aes(x = avg_stat, y = median, fill = type1)) +
+  geom_bar(stat = 'identity', position = 'dodge', colour = 'black') +
+  scale_fill_manual(values = type_col) 
+})
+```
+
