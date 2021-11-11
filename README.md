@@ -16,3 +16,5 @@
 ## 2021-11-11 - Maps (elevation maps with rayshader and elevatr)
 ![](elevation_maps/uk.png)
 
+## Data from Pokémon games
+![](Pokemon_viz/ash_pokemon_plot.png)
