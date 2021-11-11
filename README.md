@@ -12,3 +12,7 @@
 
 ## 2021-10-26 - Ultra Trail Running
 ![](Trail-running-2021-10-26/long_standing_uk_races.png)
+
+## 2021-11-11 - Maps (elevation maps with rayshader and elevatr)
+![](elevation_maps/uk.png)
+
