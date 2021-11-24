@@ -1,4 +1,7 @@
 # ideas and code comes from - https://twitter.com/researchremora/status/1418392590244892673?s=21
+# data from: https://gadm.org/download_country.html
+# codes from: https://wits.worldbank.org/wits/wits/witshelp/content/codes/country_codes.htm
+
 #remotes::install_github("tylermorganwall/rayrender")
 #remotes::install_github("tylermorganwall/rayshader")
 

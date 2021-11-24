@@ -46,24 +46,32 @@ theme_set(theme_bw())
 
 # temperature (remove port lincoln)
 tempPlot <- ggplot(tempSummary, aes(x = year, y = yearlyAveTemp, group = city_name)) + 
-  geom_line(aes(color = city_name)) + geom_smooth(aes(color = city_name), se = FALSE) +
-  scale_color_brewer(palette = "Dark2") 
+  geom_line(aes(color = city_name), size = 2.5)
+  scale_color_brewer(palette = "Dark2") +
+    labs(y = "Yearly average rain frequency",
+         colour = "City name")
 
 # rainfall
 rainPlot <- rainSummary %>% filter(year > 1900) %>%
 ggplot(aes(x = year, y = yearlyRain, group = city_name)) + 
-  geom_line(aes(colour = city_name)) + geom_smooth(aes(color = city_name), se = FALSE) +
+  geom_line(aes(colour = city_name), size = 2.5) +
   xlim(1900 , max(rainSummary$year)) +
-  scale_color_brewer(palette = "Dark2")
+  scale_color_brewer(palette = "Dark2") +
+  labs(y = "Yearly average temperature",
+       colour = "City name")
 
 # combine
 auzFire_static <- rainPlot / tempPlot
-auzFire_static
+auzFire_static +
+  plot_annotation(title = "Average yearly temperature and rainful in Australian cities",
+                  caption = "Australia Fires 2020-01-07 A.P.Moles")
+
+ggsave(here('Australia-fires-2020-01-07', 'Auz_Rain&Temp.png'), auzFire_static)
 
 # adding in ggannimate
 rainPlotAnn <- rainSummary %>% filter(year > 1900) %>%
   ggplot(aes(x = year, y = yearlyRain, group = city_name)) + 
-  geom_line(aes(colour = city_name))  +
+  geom_line(aes(colour = city_name), size = 2)  +
   xlim(1900 , max(rainSummary$year)) +
   scale_color_brewer(palette = "Dark2") + 
   labs(title = 'Yearly rainfall in Australian cities', 
@@ -76,20 +84,24 @@ rainPlotAnn <- rainSummary %>% filter(year > 1900) %>%
 rainAnnimate <- gganimate::animate(rainPlotAnn, width = 500, height = 440)
 
 tempPlotAnn <- ggplot(tempSummary, aes(x = year, y = yearlyAveTemp, group = city_name)) + 
-  geom_line(aes(color = city_name)) +
+  geom_line(aes(color = city_name), size = 2) +
   scale_color_brewer(palette = "Dark2") +
   labs(title = 'Average yearly temperature in Australian cities', 
        subtitle = 'Year: {as.integer(frame_along)}',
        y = 'Average temperature',
-       colour = 'City Name') +
+       colour = 'City Name',
+       caption = "Australia Fires 2020-01-07 A.P.Moles") +
   transition_reveal(year) +
   ease_aes('linear')
 
 tempAnnimate <- gganimate::animate(tempPlotAnn, width = 500, height = 440)
 
 # putting the gifs together 
-rain_mgif <- magick::image_read(rainAnnimate)
-temp_mgif <- magick::image_read(tempAnnimate)
+gganimate::anim_save(here('Australia-fires-2020-01-07', 'Auz_Rain.gif'), rainAnnimate)
+gganimate::anim_save(here('Australia-fires-2020-01-07', 'Auz_Temp.gif'), tempAnnimate)
+
+rain_mgif <- magick::image_read(here('Australia-fires-2020-01-07', 'Auz_Rain.gif'))
+temp_mgif <- magick::image_read(here('Australia-fires-2020-01-07', 'Auz_Temp.gif'))
 
 raintemp_gif <- image_append(c(rain_mgif[1], temp_mgif[1]))
 for(i in 2:100){
