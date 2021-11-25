@@ -15,6 +15,11 @@
 
 ## 2021-11-11 - Maps (elevation maps with rayshader and elevatr)
 ![](elevation_maps/uk.png)
+![](elevation_maps/monument_valley.png)
 
 ## Data from Pokémon games
+Scraped from <https://pokemondb.net/>, scraping code on [Github](https://github.com/andrewmoles2/webScraping/blob/main/R/pokemonDatabase.R)
 ![](Pokemon_viz/ash_pokemon_plot.png)
+
+## 2021-11-23 Dr Who
+

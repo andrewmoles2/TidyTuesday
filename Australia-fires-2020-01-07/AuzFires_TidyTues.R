@@ -61,10 +61,10 @@ ggplot(aes(x = year, y = yearlyRain, group = city_name)) +
        colour = "City name")
 
 # combine
-auzFire_static <- rainPlot / tempPlot
-auzFire_static +
+auzFire_static <- rainPlot / tempPlot +
   plot_annotation(title = "Average yearly temperature and rainful in Australian cities",
                   caption = "Australia Fires 2020-01-07 A.P.Moles")
+auzFire_static 
 
 ggsave(here('Australia-fires-2020-01-07', 'Auz_Rain&Temp.png'), auzFire_static)
 

@@ -29,29 +29,52 @@ scales::show_col(col_scale)
   labs(title = "The top 10 heaviest lemurs on average",
        x = "Name of lemur",
        y = "Mean weight in grams",
-       fill = "Mean age") +
+       fill = "Mean age (years)") +
   scale_fill_continuous(low = col_scale[1], high = col_scale[9]) +
-  theme_bw() -> heavy_lemurs)
+  theme_bw(base_family = "Avenir") -> heavy_lemurs)
 
 # births per year
+lemurs %>%
+  mutate(year = year(dob)) %>%
+  group_by(year) %>%
+  summarise(lemur_births_year = n()) %>%
+  summarise(avg_births = round(mean(lemur_births_year))) %>%
+  pull(avg_births) -> avg_births
+
+text_births <- paste("Average births per\n year is:", avg_births)
+
 (lemurs %>%
   mutate(year = year(dob)) %>%
   group_by(year) %>%
   summarise(lemur_births_year = n()) %>%
   mutate(avg_births = mean(lemur_births_year)) %>%
   ggplot(aes(x = year, y = lemur_births_year)) +
-  geom_line() +
+  geom_line(size = 1.5) +
   geom_area(fill = col_scale[5]) +
-  geom_hline(aes(yintercept = avg_births[1]), linetype = 2) +
-  labs(title = "Number of lemur births per year") +
-  theme_bw() -> lemur_births)
+  geom_hline(aes(yintercept = avg_births), linetype = 2) +
+  annotate(geom = "curve", x = 1960, y = 2000, xend = 1950, yend = avg_births+5,
+           curvature = 0.3, arrow = arrow(length = unit(3, "mm"))) +
+  annotate(geom = "text", x = 1960, y = 2050, label = text_births, hjust = "left") +
+  labs(title = "Number of lemur births per year",
+       y = "Total lemur births per year") +
+  theme_bw(base_family = "Avenir") -> lemur_births)
 
-
+# add title and data source
 (lemur_plots <- heavy_lemurs/lemur_births +
-  plot_annotation(caption = "Tidy Tuesday 2021-08-24 A.P.Moles"))
+  plot_annotation(
+    title = "Summary visualisations of lemur data from the Duke Lemur Centre",
+    caption = "Tidy Tuesday 2021-08-24 A.P.Moles"))
 
 ggsave(here("Lemurs_2021-08-24", "lemur_plots.png"), lemur_plots,
-       width = 6, height = 5, dpi = 150)
+       width = 8, height = 6.5, dpi = 300)
+
+wrap_plots(heavy_lemurs, lemur_births) +
+  plot_annotation(
+    title = "Summary visualisations of lemur data from the Duke Lemur Centre",
+    caption = "Tidy Tuesday 2021-08-24 A.P.Moles") -> nina_lemur
+
+#ggsave(here("Lemurs_2021-08-24", "lemur_plots_nina.png"), nina_lemur,
+            #width = 1400, height = 300, dpi = 75, units = "px")
 
 # extra ideas
 lemurs %>%
