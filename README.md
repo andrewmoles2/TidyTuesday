@@ -22,4 +22,5 @@ Scraped from <https://pokemondb.net/>, scraping code on [Github](https://github.
 ![](Pokemon_viz/ash_pokemon_plot.png)
 
 ## 2021-11-23 Dr Who
-
+![](dr-who-2021-11-23/avg_doctor_rating.png)
+![](dr-who-2021-11-23/doctor_rating_time.png)
