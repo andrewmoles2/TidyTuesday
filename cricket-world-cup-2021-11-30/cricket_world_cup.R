@@ -8,6 +8,62 @@ matches <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/ti
 
 glimpse(matches)
 
+# make ggplot theme ----
+theme_andrew <- function(){
+  font <- "Avenir" 
+  
+  theme_bw() %+replace%  # replace elements of theme to change
+    
+    theme(
+      
+      # modify border/grid
+      panel.border = element_rect(
+        fill = NA,
+        linetype = 2,
+        colour = "#DADADA"),
+      panel.grid = element_line(
+        linetype = 2,
+        size = 0.25,
+        colour = "#DADADA"),
+      
+      # facet grid colour
+      strip.background = element_rect(
+        colour = "black", fill = "#CFE9C4"),
+      strip.text.x = element_text(
+        size = 10, color = "black", face = "bold.italic"
+      ),
+      strip.text.y = element_text(
+        size = 10, color = "black", face = "bold.italic"
+      ),
+      
+      # change text
+      plot.title = element_text(
+        family = font,
+        size = 16,
+        face = 'bold',
+        hjust = 0,
+        vjust = 2),
+      plot.subtitle = element_text(
+        family = font,
+        size = 10,
+        hjust = 0,
+        vjust = 2,
+        colour = "#F1945E"),
+      plot.caption = element_text(
+        family = font,
+        size = 9,
+        hjust = 1),
+      axis.title = element_text(
+        family = font,
+        size = 10),
+      axis.text =  element_text(
+        family = font,
+        size = 9)
+    )    
+}
+
+theme_set(theme_andrew())
+
 # add year column
 matches %>%
   mutate(
@@ -28,20 +84,69 @@ world_cup <- matches %>%
 # three ideas: Find most "player of matches" players, England cricket world cup record, 
 # and Sachin Tendulkar record over time 1996-2005
 
+# best players ----
+
 world_cup %>%
   select(player_of_match, player_of_match_team) %>%
   group_by(player_of_match, player_of_match_team) %>%
   summarise(n = n(), .groups = "drop") %>%
   arrange(desc(n)) %>%
-  slice_max(n, n = 10)
+  filter(n >= 3) %>%
+  pull(player_of_match) -> top_players
   
 world_cup %>%
   select(player_of_match, player_of_match_team, year) %>%
   group_by(player_of_match, player_of_match_team, year) %>%
   summarise(n = n(), .groups = "drop") %>%
-  arrange(desc(player_of_match)) %>%
-  filter(n > 1)
+  filter(player_of_match %in% top_players) -> top_players_year
 
+pal <- c(
+  "Aravinda de Silva" = "#436398",
+  "Glenn McGrath" = "#DEC140",
+  "Lance Klusener" = "#16320C",
+  "Mark Waugh" = "#DEC140",
+  "Marvan Atapattu" = "#436398",
+  "Maurice Odumbe" = "#4C1C1C",
+  "Sachin Tendulkar" = "#4085DE",
+  "Sourav Ganguly" = "#4085DE",
+  "Neil Johnson" = "#A32323",
+  "Roger Twose" = "black",
+  "Sanath Jayasuriya" = "#436398",
+  "Shane Warne" = "#DEC140"
+)
+
+player_tournament <- data.frame(
+    year = c("1996", "1999", "2003"),
+    player = c("Sanath Jayasuriya", "Lance Klusener", "Sachin Tendulkar"),
+    team = c("Sri Lanka", "South Africa", "India")
+    )
+
+facet_labs <- c(paste(player_tournament$year[1], "player of tournament:", player_tournament$player[1]),
+                paste(player_tournament$year[2], "player of tournament:", player_tournament$player[2]),
+                paste(player_tournament$year[3], "player of tournament:", player_tournament$player[3]))
+names(facet_labs) <- player_tournament$year
+
+top_players_year %>%
+  ggplot(aes(x = player_of_match_team, y = n, label = player_of_match)) +
+  geom_text(aes(colour = player_of_match), check_overlap = TRUE,
+            family = "Avenir", size = 4.5) +
+  facet_wrap(vars(year), ncol = 1,
+             labeller = labeller(year = facet_labs)) +
+  labs(title = "Top players from Cricket World Cups 1996 to 2003",
+       subtitle = "Sachin Tendulkar only player to win more than one best player award between 1996 and 2003 world cups",
+       x = "Team", y = "Number of player of match awards",
+       caption = "2021-11-30 A.P.Moles TT") +
+  guides(colour = "none") +
+  scale_colour_manual(values = pal) +
+  scale_y_continuous(limits = c(0, 5)) +
+  coord_flip() -> top_players_plot
+  
+top_players_plot
+
+ggsave("cricket-world-cup-2021-11-30/top_players.png", top_players_plot,
+       width = 9, height = 6, dpi = 320)
+
+# player of match per team ----
 world_cup %>%
   group_by(year, player_of_match_team) %>%
   summarise(n = n()) %>%
@@ -82,7 +187,8 @@ n_player_of_match %>%
   labs(title = "Count of players of the match per team from \nCricket World Cups 1996 to 2003",
        subtitle = "This era of cricket was dominated by Australia", 
        x = "Year of Cricket World Cup",
-       y = "Number of best player in matches") +
+       y = "Number of best player in matches",
+       caption = "2021-11-30 A.P.Moles TT") +
   scale_y_continuous(limits = c(0, 9), breaks = seq(0,9,1)) -> n_best_players)
 
 ggsave("cricket-world-cup-2021-11-30/n_best_players.png", n_best_players,
