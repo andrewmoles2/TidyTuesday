@@ -27,4 +27,5 @@ Scraped from <https://pokemondb.net/>, scraping code on [Github](https://github.
 ## 2021-11-30 Cricket World Cup (1996-2003)
 ![](cricket-world-cup-2021-11-30/n_best_players.png)
 
-
+## 2021-21-07 Spiders
+![](spiders-2021-12-07/network_of_auz_spiders.png)

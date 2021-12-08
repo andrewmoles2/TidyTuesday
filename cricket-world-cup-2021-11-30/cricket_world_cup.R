@@ -79,13 +79,14 @@ n_player_of_match %>%
            colour = "white", family = "Avenir") +
   annotate(geom = "text", x = "2003", y = 7, label = "Australia - winner\nIndia - runner-up",
            colour = "white", family = "Avenir") +
-  labs(title = "Count of best players per team from \nCricket World Cups 1996 to 2003",
+  labs(title = "Count of players of the match per team from \nCricket World Cups 1996 to 2003",
+       subtitle = "This era of cricket was dominated by Australia", 
        x = "Year of Cricket World Cup",
        y = "Number of best player in matches") +
   scale_y_continuous(limits = c(0, 9), breaks = seq(0,9,1)) -> n_best_players)
 
 ggsave("cricket-world-cup-2021-11-30/n_best_players.png", n_best_players,
-       dpi = 300)
+       dpi = 320)
 
 
 
