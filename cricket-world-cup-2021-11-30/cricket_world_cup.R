@@ -3,6 +3,7 @@ library(tidyverse)
 library(lubridate)
 library(ggimage)
 library(ggthemes)
+library(ggforce)
 
 matches <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-11-30/matches.csv')
 
@@ -20,11 +21,11 @@ theme_andrew <- function(){
       panel.border = element_rect(
         fill = NA,
         linetype = 2,
-        colour = "#DADADA"),
+        colour = "#D1BFB4"),
       panel.grid = element_line(
         linetype = 2,
         size = 0.25,
-        colour = "#DADADA"),
+        colour = "#D1BFB4"),
       
       # facet grid colour
       strip.background = element_rect(
@@ -48,7 +49,7 @@ theme_andrew <- function(){
         size = 10,
         hjust = 0,
         vjust = 2,
-        colour = "#F1945E"),
+        colour = "#133977"),
       plot.caption = element_text(
         family = font,
         size = 9,
@@ -128,23 +129,42 @@ names(facet_labs) <- player_tournament$year
 
 top_players_year %>%
   ggplot(aes(x = player_of_match_team, y = n, label = player_of_match)) +
-  geom_text(aes(colour = player_of_match), check_overlap = TRUE,
-            family = "Avenir", size = 4.5) +
+  geom_segment(aes(x = player_of_match_team, y = 0,
+                   xend = player_of_match_team, yend = n),
+               linetype = 2, colour = "#D1BFB4") +
+  geom_text(aes(colour = player_of_match), check_overlap = TRUE, vjust = 0.4,
+            family = "Avenir", size = 4.5, fontface = "bold") +
   facet_wrap(vars(year), ncol = 1,
              labeller = labeller(year = facet_labs)) +
   labs(title = "Top players from Cricket World Cups 1996 to 2003",
-       subtitle = "Sachin Tendulkar only player to win more than one best player award between 1996 and 2003 world cups",
+       subtitle = "Sachin Tendulkar is only player to win more than one best player award\n between 1996 and 2003 world cups",
        x = "Team", y = "Number of player of match awards",
        caption = "2021-11-30 A.P.Moles TT") +
   guides(colour = "none") +
   scale_colour_manual(values = pal) +
-  scale_y_continuous(limits = c(0, 5)) +
-  coord_flip() -> top_players_plot
+  scale_y_continuous(limits = c(0, 5))
   
+top_players_year %>%
+  ggplot(aes(x = player_of_match, y = n, label = player_of_match_team)) +
+  geom_segment(aes(x = player_of_match, y = 0,
+                   xend = player_of_match, yend = n),
+               linetype = 2, colour = "black") +
+  geom_label(aes(colour = player_of_match),  hjust = 0.5,
+             family = "Avenir", size = 4.5, fontface = "bold") +
+  facet_wrap(vars(year), ncol = 1,
+             labeller = labeller(year = facet_labs)) +
+  coord_flip() + guides(colour = "none") +
+  scale_colour_manual(values = pal) +
+  scale_y_continuous(limits = c(0, 4.5)) +
+  labs(title = "Top players from Cricket World Cups 1996 to 2003",
+       subtitle = "Sachin Tendulkar is only player to win more than one best player award\n between 1996 and 2003 world cups",
+       x = "Team", y = "Number of player of match awards",
+       caption = "2021-11-30 A.P.Moles TT") -> top_players_plot
+
 top_players_plot
 
 ggsave("cricket-world-cup-2021-11-30/top_players.png", top_players_plot,
-       width = 9, height = 6, dpi = 320)
+       width = 8.2, height = 8.75, dpi = 320)
 
 # player of match per team ----
 world_cup %>%
