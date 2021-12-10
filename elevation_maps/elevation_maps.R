@@ -26,14 +26,36 @@ rayshader::raster_to_matrix(uk_dem) -> uk_mat
 rayshader::resize_matrix(uk_mat, 0.7) -> uk_mat_reduced
 
 # rayshading ----
+# zscale = 20
 uk_mat_reduced %>%
-  sphere_shade(texture = "imhof3") %>%
-  plot_3d(uk_mat_reduced, windowsize = c(1200, 1200), zscale = 20,
-          zoom = 0.75, phi = 89, theta = 0, fov = 0, background = "black")
+  sphere_shade(texture = create_texture("#606c22", "#afb68c", "#7D7A78", "#7D7A78", "#b1b717")) %>%
+  plot_3d(uk_mat_reduced, windowsize = c(900, 1000), 
+          zscale = 10 ,zoom = 0.40, phi = 90, theta = 0, fov = 15,
+          background = "#009dc4"
+          )
 
 # adjust options
-render_camera(zoom = 0.45, phi = 60, theta = -0.5, fov = 10)
+#render_camera(zoom = 0.45, phi = 90, theta = -0.5, fov = 10)
+#render_snapshot(clear=TRUE)
 
 # render high quality ----
-rayshader::render_highquality(filename = "elevation_maps/uk.png", samples = 100,
-                   width = 6000, height = 6000)
+#rayshader::render_highquality(filename = "elevation_maps/uk.png", samples = 100,
+#                   width = 6000, height = 6000)
+
+render_highquality(clear=TRUE, samples = 100,
+                   filename = "elevation_maps/uk.png")
+
+# testing out different parameters with montereybay data ----
+montereybay %>%
+  sphere_shade(texture="imhof2") %>%
+  plot_3d(montereybay, zscale=50, water = TRUE, watercolor="imhof2", 
+          waterlinecolor="white", waterlinealpha=0.5,
+          phi = -90)
+render_snapshot(clear = TRUE)
+
+# testing out texture map
+# order: light, shadow, left, right, centre (flat)
+create_texture("#606c22", "#afb68c", "#7D7A78", "#dfe7f0", "#b1b717") %>%
+  plot_map()
+
+scales::show_col(c("#606c22", "#afb68c", "#7D7A78", "#7D7A78", "#b1b717"))
