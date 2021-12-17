@@ -28,5 +28,8 @@ Scraped from <https://pokemondb.net/>, scraping code on [Github](https://github.
 ![](cricket-world-cup-2021-11-30/n_best_players.png)
 ![](cricket-world-cup-2021-11-30/top_players.png)
 
-## 2021-21-07 Spiders
+## 2021-12-07 Spiders
 ![](spiders-2021-12-07/network_of_auz_spiders.png)
+
+## 2021-12-14 Spice Girls
+![](spice-girls-2021-12-14/spice_girls.png)
