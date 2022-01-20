@@ -33,3 +33,6 @@ Scraped from <https://pokemondb.net/>, scraping code on [Github](https://github.
 
 ## 2021-12-14 Spice Girls
 ![](spice-girls-2021-12-14/spice_girls.png)
+
+## 2022-01-11 Bees!
+![](Bees-2022-01-11/bee_loss.png)
