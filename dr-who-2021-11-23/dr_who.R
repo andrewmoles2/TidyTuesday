@@ -148,8 +148,9 @@ df_who %>%
 (df_who %>%
   ggplot(aes(x = doctor, y = rating)) +
   geom_jitter(size = 7, width = 0.25, alpha = 0.8, aes(colour = doctor)) +
-  geom_hline(aes(yintercept = avg_rating, colour = doctor), size = 1, linetype = 2) +
-  geom_segment(aes(x = doctor, xend = doctor, y = avg_rating, yend = avg_dr_rating, colour = doctor), size = 1) +
+  geom_hline(aes(yintercept = mean(avg_rating)),colour = "#1A2523", size = 1, linetype = 5) +
+  geom_segment(aes(x = doctor, xend = doctor, y = mean(avg_rating), yend = avg_dr_rating), 
+               colour = "#1A2523", size = 1, linetype = 2) +
   geom_point(aes(x = doctor, y = avg_dr_rating),colour = "black", size = 4) +
   geom_image(aes(x = doctor, y = avg_dr_rating, image = image), asp = 1.5) +
   scale_colour_manual(values = pal) + 
