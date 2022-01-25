@@ -1,0 +1,120 @@
+---
+title: "board_games"
+author: "Andrew Moles"
+date: "25/01/2022"
+output: html_document
+---
+
+```{python}
+# set up
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+```
+
+```{python}
+ratings = pd.read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-01-25/ratings.csv')
+
+details = pd.read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-01-25/details.csv')
+```
+
+Idea - compare how ticket to ride game rating averages compare to average game rating. 
+
+```{python}
+ratings.dtypes
+ratings.describe()
+```
+
+```{python}
+# extract average rating of all games
+avg_rating = ratings['average'].mean()
+avg_rating
+```
+
+```{python}
+# filter out just ticket to ride games, drop unneeded cols
+t2ride = ratings[ratings['name'].str.contains('Ticket to Ride')]
+t2ride = t2ride.drop(['url', 'thumbnail'], axis = 1)
+```
+
+
+```{python}
+plt.clf()
+plt.scatter(t2ride['name'], t2ride['average'], s = t2ride['users_rated']/100)
+plt.xticks(rotation=90)
+plt.show()
+```
+
+```{python}
+colours = ["#001219", "#005f73","#0a9396", "#94d2bd", "#e9d8a6", "#ee9b00", "#ca6702", "#bb3e03", "#ae2012", "#9b2226", "#52AB61", "#204526"]
+
+names = t2ride['name'].values
+names_ = np.unique(names)
+
+users_rated = t2ride['users_rated'].values
+average = t2ride['average'].values
+
+plt.clf()
+fig, ax = plt.subplots(figsize = (12,12))
+
+for n, col in zip(names, colours):
+  id = np.where(names == n)
+  ax.scatter(
+    users_rated[id], average[id], label = n,
+    color = col
+  )
+  
+fig.subplots_adjust(right = 0.8)
+
+ax.legend(
+  loc = "center left",
+  bbox_to_anchor = (0.8, 0.5),
+  bbox_transform = fig.transFigure
+)
+
+plt.show();
+```
+
+
+```{python}
+user = t2ride.loc[t2ride['name']== "Ticket to Ride", ["users_rated"]] 
+avg = t2ride.loc[t2ride['name']== "Ticket to Ride", ["average"]] 
+
+user = np.array(user)
+avg = np.array(avg)
+```
+
+
+```{python}
+plt.clf()
+fig, ax = plt.subplots(figsize = (12,12))
+
+for n, col in zip(names, colours):
+  id = np.where(names == n)
+  ax.scatter(
+    users_rated[id], average[id], label = n,
+    color = col, s = 80, alpha = 0.9
+  )
+  
+plt.axhline(avg_rating, color = "black")  
+  
+plt.annotate(
+  "The original Ticket to Ride!", xy = (user, avg), xytext = (50000, 7.0), fontsize = 8.5,
+  arrowprops = dict(
+    facecolor = "black", shrink = 0.15,
+    width = 1.5, headwidth = 5, headlength = 5
+  )
+)
+
+plt.annotate(
+  f"Average board game rating is {np.round(avg_rating, 2)}", xy = (20000, avg_rating), 
+  xytext = (20000, 6.5), fontsize = 8.5
+)
+
+plt.xlabel("Number of user ratings")
+plt.ylabel("Average user rating")
+plt.title("Average user ratings of the Ticket to Ride board game")
+plt.show()  
+plt.savefig("ticket2ride.png", dpi = 300)
+```
+
