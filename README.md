@@ -38,5 +38,8 @@ Scraped from <https://pokemondb.net/>, scraping code on [Github](https://github.
 ![](Bees-2022-01-11/bee_loss.png)
 
 ## 2022-01-25 Board games
-This attempted using Python with Pandas and Matplotlib, writen in RStudio using reticulate. 
+This was attempted using Python with Pandas and Matplotlib, writen in RStudio using reticulate. 
 ![](board-games-2022-01-25/ticket2ride.png)
+
+## 2022-01-11 Dogs!
+![](dog-breeds-2022-02-01/good_boys.png)
