@@ -43,3 +43,6 @@ This was attempted using Python with Pandas and Matplotlib, writen in RStudio us
 
 ## 2022-01-11 Dogs!
 ![](dog-breeds-2022-02-01/good_boys.png)
+
+## 2022-02-22 Civil and political freedoms
+![](freedom-2022-02-22/freedoms.png)

@@ -10,6 +10,9 @@ output: html_document
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+from matplotlib.transforms import Bbox, TransformedBbox
+from matplotlib.image import BboxImage
 ```
 
 ```{python}
@@ -96,7 +99,7 @@ for n, col in zip(names, colours):
     color = col, s = 80, alpha = 0.9
   )
   
-plt.axhline(avg_rating, color = "black")  
+plt.axhline(avg_rating, color = "black")
   
 plt.annotate(
   "The original Ticket to Ride!", xy = (user, avg), xytext = (50000, 7.0), fontsize = 8.5,
@@ -107,7 +110,7 @@ plt.annotate(
 )
 
 plt.annotate(
-  f"Average board game rating is {np.round(avg_rating, 2)}", xy = (20000, avg_rating), 
+  f"Average user rating of all board games is {np.round(avg_rating, 2)}", xy = (20000, avg_rating), 
   xytext = (20000, 6.5), fontsize = 8.5
 )
 
@@ -117,4 +120,10 @@ plt.title("Average user ratings of the Ticket to Ride board game")
 plt.show()  
 plt.savefig("ticket2ride.png", dpi = 300)
 ```
+
+
+```{python}
+board_games = pd.merge(ratings, details, on = "id")
+```
+
 

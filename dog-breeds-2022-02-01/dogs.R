@@ -113,7 +113,7 @@ p1 <- rank_data_filt %>%
     panel.background = element_blank(), axis.line = element_line(colour = "darkgrey")
   ) +
   labs(
-    title = "Who are the friendliest dogs breeds, and how popular are they?",
+    title = "The top 15 friendliest dogs breeds and their popularity",
     subtitle = "Pupularity of dog breeds by AKC registration statistics from 2013-2020.
     Friendliness is average of nice traits, such as Affectionate With Family",
     caption = "TidyTuesday week 5 | Data from American Kennel Club",
