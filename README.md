@@ -46,3 +46,6 @@ This was attempted using Python with Pandas and Matplotlib, writen in RStudio us
 
 ## 2022-02-22 Civil and political freedoms
 ![](freedom-2022-02-22/freedoms.png)
+
+## 2022-03-08 Erasmus
+![](erasmus-2022-03-08/erasmus_polar.png)
