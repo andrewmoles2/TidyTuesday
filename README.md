@@ -49,3 +49,4 @@ This was attempted using Python with Pandas and Matplotlib, writen in RStudio us
 
 ## 2022-03-08 Erasmus
 ![](erasmus-2022-03-08/erasmus_polar.png)
+![](erasmus-2022-03-08/erasmus_alluvial.png)
