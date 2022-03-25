@@ -117,4 +117,4 @@ ggsave("R-vignettes-2022-03-15/background.png", back,
 p2_back <- ggimage::ggbackground(p2, "R-vignettes-2022-03-15/background.png")
 p2_back
 
-ggsave("R-vignettes-2022-03-15/Fav_packages.png", p2_back, width = 8, dpi = 320)
+ggsave("R-vignettes-2022-03-15/Fav_packages.png", p2_back, width = 7, dpi = 320)

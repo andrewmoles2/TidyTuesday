@@ -54,3 +54,6 @@ This was attempted using Python with Pandas and Matplotlib, writen in RStudio us
 ## 2022-03-15 R Vignettes
 ![](R-vignettes-2022-03-15/Fav_packages.gif)
 ![](R-vignettes-2022-03-15/Fav_packages.png)
+
+## 2022-03-22 US Babynames
+![](babynames-2022-03-22/dsl_names.png)
