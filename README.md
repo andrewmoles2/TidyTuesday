@@ -57,3 +57,10 @@ This was attempted using Python with Pandas and Matplotlib, writen in RStudio us
 
 ## 2022-03-22 US Babynames
 ![](babynames-2022-03-22/dsl_names.png)
+
+## 2022-04-19 Crosswords
+![](crosswords-2022-04-19/cross_ans_def.png)
+Using tidytext to extra tokens from the crossword clues
+![](crosswords-2022-04-19/crossword_tokens.png)
+Using the clues in a flow field for more of an aRty feel
+![](crosswords-2022-04-19/clue_flow.png)
