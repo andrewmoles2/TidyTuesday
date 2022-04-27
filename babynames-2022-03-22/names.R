@@ -106,7 +106,7 @@ work_names %>%
 work_names_plot
 
 ggsave("babynames-2022-03-22/dsl_names.png",
-       width = 10, height = 7)
+       width = 10, height = 7, bg = "white")
 
 # individuals (can do this with for loops over names)
 # either use gghighlight or filter

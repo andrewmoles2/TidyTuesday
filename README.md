@@ -60,7 +60,18 @@ This was attempted using Python with Pandas and Matplotlib, writen in RStudio us
 
 ## 2022-04-19 Crosswords
 ![](crosswords-2022-04-19/cross_ans_def.png)
-Using tidytext to extra tokens from the crossword clues
+
+Using tidytext to extract tokens from the crossword clues
+
 ![](crosswords-2022-04-19/crossword_tokens.png)
+
 Using the clues in a flow field for more of an aRty feel
+
 ![](crosswords-2022-04-19/clue_flow.png)
+
+## 2022-04-26 Kaggle Hidden Gems
+Attempt at text mining sentiments from hidden gems reviews
+![](hidden-gems-2022-04-26/sentiments_over_time.png)
+![](hidden-gems-2022-04-26/top_sentiments.png)
+
+
