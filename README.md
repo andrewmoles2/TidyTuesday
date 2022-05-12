@@ -17,10 +17,12 @@
 ![](elevation_maps/uk.png)
 ![](elevation_maps/vista-maps/outputs/monument_valley.png)
 
+<!--
 ## Data from Pokémon games
 Scraped from <https://pokemondb.net/>, scraping code on [Github](https://github.com/andrewmoles2/webScraping/blob/main/R/pokemonDatabase.R)
 ![](Pokemon_viz/ash_pokemon_plot.png)
-
+ -->
+ 
 ## 2021-11-23 Dr Who
 ![](dr-who-2021-11-23/avg_doctor_rating.png)
 
@@ -74,4 +76,5 @@ Attempt at text mining sentiments from hidden gems reviews
 ![](hidden-gems-2022-04-26/sentiments_over_time.png)
 ![](hidden-gems-2022-04-26/top_sentiments.png)
 
-
+## 2022-05-10 NYT Best Sellers
+![](best-sellers-2022-05-10/booker_nty.png)
