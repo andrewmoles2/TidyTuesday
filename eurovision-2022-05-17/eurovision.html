@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="generator" content="quarto-0.9.165">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Eurovision data for Tidy Tuesday - trying it out in Python</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+
+  <script src="eurovision_files/libs/clipboard/clipboard.min.js"></script>
+  <script src="eurovision_files/libs/quarto-html/quarto.js"></script>
+  <script src="eurovision_files/libs/quarto-html/popper.min.js"></script>
+  <script src="eurovision_files/libs/quarto-html/tippy.umd.min.js"></script>
+  <script src="eurovision_files/libs/quarto-html/anchor.min.js"></script>
+  <link href="eurovision_files/libs/quarto-html/tippy.css" rel="stylesheet">
+  <link id="quarto-text-highlighting-styles" href="eurovision_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet">
+  <script src="eurovision_files/libs/bootstrap/bootstrap.min.js"></script>
+  <link href="eurovision_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+  <link href="eurovision_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+  <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body class="fullcontent">
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+<header id="title-block-header" class="quarto-title-block default">
+
+<div class="quarto-title"><h1 class="title display-7">Eurovision data for Tidy Tuesday - trying it out in Python</h1></div></header>
+<section id="tidy-tuesday---eurovision" class="level2">
+<h2 class="anchored" data-anchor-id="tidy-tuesday---eurovision">Tidy Tuesday - Eurovision!</h2>
+<p>Testing out a few things with Python in an attempt to branch out from R for a change.</p>
+<p>HTML document rendered using <a href="https://quarto.org/docs/get-started/hello/jupyter.html">quarto</a> jupyter extension.</p>
+<p>First we will load in the libraries. Will be mostly using pandas and plot line, but will show some matplotlib and seaborn too</p>
+<div class="cell" data-execution_count="65">
+<div class="sourceCode" id="cb1"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> <span class="op">*</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode" id="cb2"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load in the data</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>eurovision <span class="op">=</span> pd.read_csv(<span class="st">'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-05-17/eurovision.csv'</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>eurovision.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display" data-execution_count="2">
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>event</th>
+      <th>host_city</th>
+      <th>year</th>
+      <th>host_country</th>
+      <th>event_url</th>
+      <th>section</th>
+      <th>artist</th>
+      <th>song</th>
+      <th>artist_url</th>
+      <th>image_url</th>
+      <th>artist_country</th>
+      <th>country_emoji</th>
+      <th>running_order</th>
+      <th>total_points</th>
+      <th>rank</th>
+      <th>rank_ordinal</th>
+      <th>qualified</th>
+      <th>winner</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Turin 2022</td>
+      <td>Turin</td>
+      <td>2022</td>
+      <td>Italy</td>
+      <td>https://eurovision.tv/event/turin-2022</td>
+      <td>first-semi-final</td>
+      <td>Kalush Orchestra</td>
+      <td>Stefania</td>
+      <td>https://eurovision.tv/participant/kalush-orche...</td>
+      <td>https://static.eurovision.tv/hb-cgi/images/963...</td>
+      <td>Ukraine</td>
+      <td>:flag_ua:</td>
+      <td>6.0</td>
+      <td>337.0</td>
+      <td>1.0</td>
+      <td>1st</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Turin 2022</td>
+      <td>Turin</td>
+      <td>2022</td>
+      <td>Italy</td>
+      <td>https://eurovision.tv/event/turin-2022</td>
+      <td>first-semi-final</td>
+      <td>S10</td>
+      <td>De Diepte</td>
+      <td>https://eurovision.tv/participant/s10-22</td>
+      <td>https://static.eurovision.tv/hb-cgi/images/963...</td>
+      <td>Netherlands</td>
+      <td>:flag_nl:</td>
+      <td>8.0</td>
+      <td>221.0</td>
+      <td>2.0</td>
+      <td>2nd</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Turin 2022</td>
+      <td>Turin</td>
+      <td>2022</td>
+      <td>Italy</td>
+      <td>https://eurovision.tv/event/turin-2022</td>
+      <td>first-semi-final</td>
+      <td>Amanda Georgiadi Tenfjord</td>
+      <td>Die Together</td>
+      <td>https://eurovision.tv/participant/amanda-georg...</td>
+      <td>https://static.eurovision.tv/hb-cgi/images/963...</td>
+      <td>Greece</td>
+      <td>:flag_gr:</td>
+      <td>15.0</td>
+      <td>211.0</td>
+      <td>3.0</td>
+      <td>3rd</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Turin 2022</td>
+      <td>Turin</td>
+      <td>2022</td>
+      <td>Italy</td>
+      <td>https://eurovision.tv/event/turin-2022</td>
+      <td>first-semi-final</td>
+      <td>MARO</td>
+      <td>Saudade, Saudade</td>
+      <td>https://eurovision.tv/participant/maro-22</td>
+      <td>https://static.eurovision.tv/hb-cgi/images/963...</td>
+      <td>Portugal</td>
+      <td>:flag_pt:</td>
+      <td>10.0</td>
+      <td>208.0</td>
+      <td>4.0</td>
+      <td>4th</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Turin 2022</td>
+      <td>Turin</td>
+      <td>2022</td>
+      <td>Italy</td>
+      <td>https://eurovision.tv/event/turin-2022</td>
+      <td>first-semi-final</td>
+      <td>Intelligent Music Project</td>
+      <td>Intention</td>
+      <td>https://eurovision.tv/participant/intelligent-...</td>
+      <td>https://static.eurovision.tv/hb-cgi/images/963...</td>
+      <td>Bulgaria</td>
+      <td>:flag_bg:</td>
+      <td>7.0</td>
+      <td>29.0</td>
+      <td>16.0</td>
+      <td>16th</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode" id="cb3"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quick check of how the data is organised. We only want the finals</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>eurovision[<span class="st">'section'</span>].value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display" data-execution_count="11">
+<pre><code>final                917
+grand-final          462
+second-semi-final    266
+first-semi-final     261
+semi-final            99
+Name: section, dtype: int64</code></pre>
+</div>
+</div>
+<section id="cleaning-and-aggregating" class="level3">
+<h3 class="anchored" data-anchor-id="cleaning-and-aggregating">cleaning and aggregating</h3>
+<p>Now we do some cleaning and aggreating. Looking to find out some averages for points and rank, as well as total wins. Finally, we make a win ratio.</p>
+<div class="cell" data-execution_count="72">
+<div class="sourceCode" id="cb5"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make col with winner as number</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>eurovision[<span class="st">'winner_int'</span>] <span class="op">=</span> eurovision.winner.astype(<span class="bu">int</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># aggregate points, rank, and winner by country</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>euro_agg <span class="op">=</span> eurovision.loc[(eurovision[<span class="st">"section"</span>]  <span class="op">==</span> <span class="st">'final'</span>) <span class="op">|</span> (eurovision[<span class="st">"section"</span>] <span class="op">==</span> <span class="st">'grand-final'</span>), :].groupby(<span class="st">'artist_country'</span>).agg(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    avg_points<span class="op">=</span>pd.NamedAgg(column<span class="op">=</span><span class="st">"total_points"</span>, aggfunc<span class="op">=</span><span class="st">"mean"</span>),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    avg_rank<span class="op">=</span>pd.NamedAgg(column<span class="op">=</span><span class="st">"rank"</span>, aggfunc<span class="op">=</span><span class="st">"mean"</span>),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    tot_wins <span class="op">=</span> pd.NamedAgg(column<span class="op">=</span><span class="st">'winner_int'</span>, aggfunc<span class="op">=</span><span class="st">'sum'</span>),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    tot_years <span class="op">=</span> pd.NamedAgg(column<span class="op">=</span><span class="st">'year'</span>, aggfunc<span class="op">=</span><span class="st">'count'</span>)).sort_values(<span class="st">'tot_wins'</span>, ascending<span class="op">=</span><span class="va">False</span>).reset_index()</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>euro_agg[<span class="st">'win_ratio'</span>] <span class="op">=</span> (euro_agg[<span class="st">'tot_wins'</span>]<span class="op">/</span>euro_agg[<span class="st">'tot_years'</span>])<span class="op">*</span><span class="dv">100</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>euro_agg.head(<span class="dv">11</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display" data-execution_count="72">
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>artist_country</th>
+      <th>avg_points</th>
+      <th>avg_rank</th>
+      <th>tot_wins</th>
+      <th>tot_years</th>
+      <th>win_ratio</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Ireland</td>
+      <td>76.177778</td>
+      <td>8.866667</td>
+      <td>7</td>
+      <td>45</td>
+      <td>15.555556</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Sweden</td>
+      <td>99.796610</td>
+      <td>8.400000</td>
+      <td>6</td>
+      <td>60</td>
+      <td>10.000000</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>France</td>
+      <td>67.761905</td>
+      <td>9.907692</td>
+      <td>5</td>
+      <td>66</td>
+      <td>7.575758</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Luxembourg</td>
+      <td>40.657143</td>
+      <td>8.815789</td>
+      <td>5</td>
+      <td>38</td>
+      <td>13.157895</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Netherlands</td>
+      <td>65.080000</td>
+      <td>10.129630</td>
+      <td>5</td>
+      <td>55</td>
+      <td>9.090909</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>United Kingdom</td>
+      <td>72.174603</td>
+      <td>9.343750</td>
+      <td>5</td>
+      <td>65</td>
+      <td>7.692308</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Israel</td>
+      <td>85.567568</td>
+      <td>10.540541</td>
+      <td>4</td>
+      <td>37</td>
+      <td>10.810811</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Ukraine</td>
+      <td>198.823529</td>
+      <td>8.411765</td>
+      <td>3</td>
+      <td>17</td>
+      <td>17.647059</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Denmark</td>
+      <td>64.681818</td>
+      <td>10.000000</td>
+      <td>3</td>
+      <td>44</td>
+      <td>6.818182</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Italy</td>
+      <td>100.200000</td>
+      <td>7.166667</td>
+      <td>3</td>
+      <td>49</td>
+      <td>6.122449</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Norway</td>
+      <td>69.924528</td>
+      <td>11.982456</td>
+      <td>3</td>
+      <td>57</td>
+      <td>5.263158</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>This is a function I made a while back to pull extract hex codes from the <a href="https://coolors.co/">coolors</a> website.</p>
+<div class="cell" data-execution_count="66">
+<div class="sourceCode" id="cb6"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># function to make hex codes from coolors url</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> coolors(URL):</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># function takes coolors url, extracts hex codes and adds #</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> URL.find(<span class="st">"palette"</span>) <span class="op">!=</span> <span class="op">-</span><span class="dv">1</span>:</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># extract just the hex</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        cstr <span class="op">=</span> URL.replace(<span class="st">"coolors.co"</span>, <span class="st">""</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        cstr <span class="op">=</span> cstr.replace(<span class="st">"https:///"</span>, <span class="st">""</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        cstr <span class="op">=</span> cstr.replace(<span class="st">"palette/"</span>, <span class="st">""</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        cstr <span class="op">=</span> cstr.replace(<span class="st">"-"</span>, <span class="st">" "</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># split into individual strings and add #</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        clist <span class="op">=</span> cstr.split(<span class="st">" "</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        cols <span class="op">=</span> []</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="bu">hex</span> <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(clist)):</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>            cols.append((<span class="bu">str</span>(<span class="st">"#"</span> <span class="op">+</span> clist[<span class="bu">hex</span>])))</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> cols</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        <span class="co"># extract just the hex</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        cstr <span class="op">=</span> URL.replace(<span class="st">"coolors.co"</span>, <span class="st">""</span>)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        cstr <span class="op">=</span> cstr.replace(<span class="st">"https:///"</span>, <span class="st">""</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>        cstr <span class="op">=</span> cstr.replace(<span class="st">"-"</span>, <span class="st">" "</span>)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># split into individual strings and add #</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>        clist <span class="op">=</span> cstr.split(<span class="st">" "</span>)</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>        cols <span class="op">=</span> []</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="bu">hex</span> <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(clist)):</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>            cols.append((<span class="bu">str</span>(<span class="st">"#"</span> <span class="op">+</span> clist[<span class="bu">hex</span>])))</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> cols</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="41">
+<div class="sourceCode" id="cb7"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># little test to see if a yearly aggregation would be interesting</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>euro_years <span class="op">=</span> (eurovision.loc[(eurovision[<span class="st">"section"</span>]  <span class="op">==</span> <span class="st">'final'</span>) <span class="op">|</span> (eurovision[<span class="st">"section"</span>] <span class="op">==</span> <span class="st">'grand-final'</span>), :]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>).groupby(by <span class="op">=</span> [<span class="st">'year'</span>, <span class="st">'artist_country'</span>]).agg(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    tot_points<span class="op">=</span>pd.NamedAgg(column<span class="op">=</span><span class="st">"total_points"</span>, aggfunc<span class="op">=</span><span class="st">"sum"</span>),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    rank<span class="op">=</span>pd.NamedAgg(column<span class="op">=</span><span class="st">"rank"</span>, aggfunc<span class="op">=</span><span class="st">"mean"</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    ).sort_values(<span class="st">'tot_points'</span>, ascending<span class="op">=</span><span class="va">False</span>).reset_index()</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>euro_years.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display" data-execution_count="41">
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>year</th>
+      <th>artist_country</th>
+      <th>tot_points</th>
+      <th>rank</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2017</td>
+      <td>Portugal</td>
+      <td>758.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2022</td>
+      <td>Ukraine</td>
+      <td>631.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2017</td>
+      <td>Bulgaria</td>
+      <td>615.0</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2016</td>
+      <td>Ukraine</td>
+      <td>534.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2018</td>
+      <td>Israel</td>
+      <td>529.0</td>
+      <td>1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="plotting" class="level3">
+<h3 class="anchored" data-anchor-id="plotting">plotting</h3>
+<p>First up is matplotlib, very simple test with year and total points</p>
+<div class="cell" data-execution_count="64">
+<div class="sourceCode" id="cb8"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>x, y <span class="op">=</span> euro_years.loc[euro_years[<span class="st">'year'</span>] <span class="op">&gt;</span> <span class="dv">2018</span>, <span class="st">'year'</span>], euro_years.loc[euro_years[<span class="st">'year'</span>] <span class="op">&gt;</span> <span class="dv">2018</span>, <span class="st">'tot_points'</span>]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.array(x).astype(<span class="bu">int</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.array(y)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>plt.scatter(x, y)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.legend()</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="eurovision_files/figure-html/cell-8-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Now we try using seaborn with average points and rank.</p>
+<div class="cell" data-execution_count="47">
+<div class="sourceCode" id="cb9"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sns.relplot(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> euro_agg,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="st">'avg_points'</span>, y <span class="op">=</span> <span class="st">'avg_rank'</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    size <span class="op">=</span> <span class="st">'tot_wins'</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display" data-execution_count="47">
+<pre><code>&lt;seaborn.axisgrid.FacetGrid at 0x7fdfc95096a0&gt;</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="eurovision_files/figure-html/cell-9-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Finally we move to plotnine, which is the Python version of ggplot2. It doesn’t have all the amazing extensions of ggplot2, but seems to work okay. First thing is to get the palette ready. Then we construct the plot. Using xkcd for something a bit fun.</p>
+<div class="cell" data-execution_count="75">
+<div class="sourceCode" id="cb11"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make palette</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>pal_url <span class="op">=</span> <span class="st">"https://coolors.co/palette/cc4400-d66915-e08e29-f0c761-ffff99-c2fcff-7cc6de-3890bc-1c489a-000077-35e6ae"</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>pal <span class="op">=</span> coolors(pal_url)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-stdout">
+<pre><code>['#cc4400', '#d66915', '#e08e29', '#f0c761', '#ffff99', '#c2fcff', '#7cc6de', '#3890bc', '#1c489a', '#000077', '#35e6ae']</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="118">
+<div class="sourceCode" id="cb13"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>euro_agg[euro_agg[<span class="st">'tot_wins'</span>] <span class="op">&gt;=</span> <span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display" data-execution_count="118">
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>artist_country</th>
+      <th>avg_points</th>
+      <th>avg_rank</th>
+      <th>tot_wins</th>
+      <th>tot_years</th>
+      <th>win_ratio</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Ireland</td>
+      <td>76.177778</td>
+      <td>8.866667</td>
+      <td>7</td>
+      <td>45</td>
+      <td>15.555556</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Sweden</td>
+      <td>99.796610</td>
+      <td>8.400000</td>
+      <td>6</td>
+      <td>60</td>
+      <td>10.000000</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>France</td>
+      <td>67.761905</td>
+      <td>9.907692</td>
+      <td>5</td>
+      <td>66</td>
+      <td>7.575758</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Luxembourg</td>
+      <td>40.657143</td>
+      <td>8.815789</td>
+      <td>5</td>
+      <td>38</td>
+      <td>13.157895</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Netherlands</td>
+      <td>65.080000</td>
+      <td>10.129630</td>
+      <td>5</td>
+      <td>55</td>
+      <td>9.090909</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>United Kingdom</td>
+      <td>72.174603</td>
+      <td>9.343750</td>
+      <td>5</td>
+      <td>65</td>
+      <td>7.692308</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Israel</td>
+      <td>85.567568</td>
+      <td>10.540541</td>
+      <td>4</td>
+      <td>37</td>
+      <td>10.810811</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Ukraine</td>
+      <td>198.823529</td>
+      <td>8.411765</td>
+      <td>3</td>
+      <td>17</td>
+      <td>17.647059</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Denmark</td>
+      <td>64.681818</td>
+      <td>10.000000</td>
+      <td>3</td>
+      <td>44</td>
+      <td>6.818182</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Italy</td>
+      <td>100.200000</td>
+      <td>7.166667</td>
+      <td>3</td>
+      <td>49</td>
+      <td>6.122449</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Norway</td>
+      <td>69.924528</td>
+      <td>11.982456</td>
+      <td>3</td>
+      <td>57</td>
+      <td>5.263158</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="125">
+<div class="sourceCode" id="cb14"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>euro_plot <span class="op">=</span> ggplot(euro_agg[euro_agg[<span class="st">'tot_wins'</span>] <span class="op">&gt;=</span> <span class="dv">3</span>], aes(x <span class="op">=</span> <span class="st">'avg_points'</span>, y <span class="op">=</span> <span class="st">'win_ratio'</span>, color <span class="op">=</span> <span class="st">'artist_country'</span>, size <span class="op">=</span> <span class="st">"avg_rank"</span>)) <span class="op">+\</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    geom_point(alpha <span class="op">=</span> <span class="fl">0.8</span>) <span class="op">+\</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    scale_color_manual(values <span class="op">=</span> pal) <span class="op">+\</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    scale_size(trans <span class="op">=</span> <span class="st">'reverse'</span>, guide <span class="op">=</span> <span class="va">False</span>) <span class="op">+\</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    labs(title <span class="op">=</span> <span class="st">"Top Eurovision countries!</span><span class="ch">\n</span><span class="st"> Only winners with 3 or more wins included"</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>         x <span class="op">=</span> <span class="st">"Average points per competition"</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>         y <span class="op">=</span> <span class="st">"Win ratio (wins/number years competing)"</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>         color <span class="op">=</span> <span class="st">"Country"</span>) <span class="op">+\</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>     annotate(<span class="st">"text"</span>, x <span class="op">=</span> <span class="dv">175</span>, y <span class="op">=</span> <span class="fl">14.5</span>, label <span class="op">=</span> <span class="st">"Ukraine are Eurovision</span><span class="ch">\n</span><span class="st"> superstars with</span><span class="ch">\n</span><span class="st"> 3 wins in 17 years"</span>) <span class="op">+\</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>     annotate(<span class="st">'segment'</span>, x <span class="op">=</span> <span class="dv">175</span>, y <span class="op">=</span> <span class="fl">15.5</span>, xend <span class="op">=</span> <span class="dv">197</span>, yend <span class="op">=</span> <span class="fl">17.5</span>, arrow <span class="op">=</span> arrow(angle<span class="op">=</span><span class="dv">15</span>, length<span class="op">=</span><span class="fl">0.15</span>, <span class="bu">type</span><span class="op">=</span><span class="st">'closed'</span>)) <span class="op">+\</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    theme_xkcd()</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>euro_plot.save(<span class="st">"eurovision.png"</span>, width<span class="op">=</span><span class="dv">8</span>, height<span class="op">=</span><span class="dv">6</span>, dpi<span class="op">=</span><span class="dv">320</span>)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>euro_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-stderr">
+<pre><code>/Users/MOLES/opt/anaconda3/lib/python3.8/site-packages/plotnine/ggplot.py:727: PlotnineWarning: Saving 8 x 6 in image.
+/Users/MOLES/opt/anaconda3/lib/python3.8/site-packages/plotnine/ggplot.py:730: PlotnineWarning: Filename: eurovision.png</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="eurovision_files/figure-html/cell-12-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output-display" data-execution_count="125">
+<pre><code>&lt;ggplot: (8787416446163)&gt;</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="126">
+<div class="sourceCode" id="cb17"><pre class="sourceCode python cell-code code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quick look at the best win ratios</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>euro_agg.sort_values(<span class="st">'win_ratio'</span>, ascending<span class="op">=</span><span class="va">False</span>).head(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display" data-execution_count="126">
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>artist_country</th>
+      <th>avg_points</th>
+      <th>avg_rank</th>
+      <th>tot_wins</th>
+      <th>tot_years</th>
+      <th>win_ratio</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>7</th>
+      <td>Ukraine</td>
+      <td>198.823529</td>
+      <td>8.411765</td>
+      <td>3</td>
+      <td>17</td>
+      <td>17.647059</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>Ireland</td>
+      <td>76.177778</td>
+      <td>8.866667</td>
+      <td>7</td>
+      <td>45</td>
+      <td>15.555556</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Luxembourg</td>
+      <td>40.657143</td>
+      <td>8.815789</td>
+      <td>5</td>
+      <td>38</td>
+      <td>13.157895</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Israel</td>
+      <td>85.567568</td>
+      <td>10.540541</td>
+      <td>4</td>
+      <td>37</td>
+      <td>10.810811</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>Latvia</td>
+      <td>97.100000</td>
+      <td>11.600000</td>
+      <td>1</td>
+      <td>10</td>
+      <td>10.000000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Sweden</td>
+      <td>99.796610</td>
+      <td>8.400000</td>
+      <td>6</td>
+      <td>60</td>
+      <td>10.000000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Netherlands</td>
+      <td>65.080000</td>
+      <td>10.129630</td>
+      <td>5</td>
+      <td>55</td>
+      <td>9.090909</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>Serbia</td>
+      <td>143.909091</td>
+      <td>11.090909</td>
+      <td>1</td>
+      <td>11</td>
+      <td>9.090909</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>United Kingdom</td>
+      <td>72.174603</td>
+      <td>9.343750</td>
+      <td>5</td>
+      <td>65</td>
+      <td>7.692308</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>Azerbaijan</td>
+      <td>144.692308</td>
+      <td>10.153846</td>
+      <td>1</td>
+      <td>13</td>
+      <td>7.692308</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+
+</section>
+</section>
+</main>
+<!-- /main column -->
+<script type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    setTimeout(function() {
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+</body></html>

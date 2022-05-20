@@ -78,3 +78,7 @@ Attempt at text mining sentiments from hidden gems reviews
 
 ## 2022-05-10 NYT Best Sellers
 ![](best-sellers-2022-05-10/booker_nty.png)
+
+## 2022-05-17 Eurovision
+Made with Python using pandas and plotnine, using jupyter (+ quorto extension).
+![](eurovision-2022-05-17/eurovision.png)
