@@ -88,43 +88,86 @@ rank_data_filt <- rank_data %>%
     )
 
 # plot!
-p1 <- rank_data_filt %>%
-  ggplot(aes(year, rank)) + 
-  geom_textpath(aes(group = breed_clean, colour = factor(rank_cat), label = breed_clean),
-                family = f1, size = 3, fontface = 2, hjust = 0.02, vjust = 0.2,
-                linewidth = 2.25, straight = FALSE, lineend = "round") +
+p1 <- ggplot() + 
+  geomtextpath::geom_textpath(data = rank_data_filt,
+                              aes(year, rank, group = breed_clean, 
+                                  colour = factor(rank_cat), label = breed_clean),
+                              hjust = 0.02, vjust = 0.2, size = 3, fontface = 2,
+                              lineend = "round", linewidth = 1.5, straight = FALSE) +
   scale_y_reverse(breaks = seq(1, max(rank_data_filt$rank), 3)) +
   scale_x_continuous(breaks = seq(2013, 2020, 1)) +
-  scale_colour_manual("Loved or undervalued?", values = met.brewer("Egypt")) +
+  scale_colour_manual(values = met.brewer("Egypt")) +
   coord_cartesian(clip = "off") +
-  theme_minimal(base_size = 14, base_family = f1) +
+  theme_minimal(base_size = 18, base_family = f1) +
   theme(
-    legend.position = "top",
-    legend.margin = margin(t=6,b=2),
-    legend.justification = "left",
+    legend.position = 'none',
     plot.margin = unit(c(0.5, 1, 0.5, 0.5), "cm"),
-    plot.title = element_text(face = "bold"),
-    axis.text.x = element_text(size=12, margin=margin(t=3)),
-    axis.text.y = element_text(size = 12, margin = margin(t=3)),
+    plot.title = element_text(face = "bold", size = 24),
+    axis.text.x = element_text(size=16, margin=margin(t=3)),
+    axis.text.y = element_text(size = 16, margin = margin(t=3)),
     plot.caption.position = "plot",
-    legend.text = element_text(size = 10),
-    legend.title = element_text(size = 10),
     panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
     panel.background = element_blank(), axis.line = element_line(colour = "darkgrey")
   ) +
   labs(
-    title = "The top 15 friendliest dogs breeds and their popularity",
+    title = "The top 15 friendliest dogs breeds and their pupularity",
     subtitle = "Pupularity of dog breeds by AKC registration statistics from 2013-2020.
     Friendliness is average of nice traits, such as Affectionate With Family",
     caption = "TidyTuesday week 5 | Data from American Kennel Club",
     y = "Pupularity of dog breed (rank)"
-  ) + 
-  geom_image(data = rank_data_filt %>% filter(year == min(year)), aes(image = image, x = year-.3), asp = 2, size = 0.012) +
-  geom_image(data = rank_data_filt %>% filter(year == max(year)), aes(image = image, x = year+.3), asp = 2, size = 0.012)
+  ) +
+  annotate(geom = "label", x = 2016, y = 82, label = "Underrated Pups", 
+           hjust = "left", colour = met.brewer("Egypt")[3]) +
+  annotate(geom = "label", x = 2016, y = 38, label = "Good Boys", 
+           hjust = "left", colour = met.brewer("Egypt")[1]) +
+  annotate(geom = "label", x = 2016, y = 16, label = "Top dogs", 
+           hjust = "left", colour = met.brewer("Egypt")[2]) +
+  geom_image(data = rank_data_filt %>% filter(year == min(year)),
+             aes(image = image, x = year - 0.3, y = rank),
+             asp = 2, size = 0.015) +
+  geom_image(data = rank_data_filt %>% filter(year == max(year)),
+             aes(image = image, x = year + 0.3, y = rank),
+             asp = 2, size = 0.015)
+
+# this broke and I'm not sure why - geom_textpath was making random text, legend went weird
+#p1 <- rank_data_filt %>%
+#  ggplot(aes(year, rank)) + 
+#  geomtextpath::geom_textpath(aes(group = breed_clean, colour = factor(rank_cat), label = breed_clean),
+#                family = f1, size = 3, fontface = 2, hjust = 0.02, vjust = 0.2,
+#                linewidth = 2.25, straight = FALSE, lineend = "round") +
+#  scale_y_reverse(breaks = seq(1, max(rank_data_filt$rank), 3)) +
+#  scale_x_continuous(breaks = seq(2013, 2020, 1)) +
+#  scale_colour_manual("Loved or undervalued?", values = met.brewer("Egypt")) +
+#  coord_cartesian(clip = "off") +
+#  theme_minimal(base_size = 14, base_family = f1) +
+#  theme(
+#    legend.position = "top",
+#    legend.margin = margin(t=6,b=2),
+#    legend.justification = "left",
+#    plot.margin = unit(c(0.5, 1, 0.5, 0.5), "cm"),
+#    plot.title = element_text(face = "bold"),
+#    axis.text.x = element_text(size=12, margin=margin(t=3)),
+#    axis.text.y = element_text(size = 12, margin = margin(t=3)),
+#    plot.caption.position = "plot",
+#    legend.text = element_text(size = 10),
+#    legend.title = element_text(size = 10),
+#    panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+#    panel.background = element_blank(), axis.line = element_line(colour = "darkgrey")
+#  ) +
+#  labs(
+#    title = "The top 15 friendliest dogs breeds and their popularity",
+#    subtitle = "Pupularity of dog breeds by AKC registration statistics from 2013-2020.
+#    Friendliness is average of nice traits, such as Affectionate With Family",
+#    caption = "TidyTuesday week 5 | Data from American Kennel Club",
+#    y = "Pupularity of dog breed (rank)"
+#  ) + 
+#  geom_image(data = rank_data_filt %>% filter(year == min(year)), aes(image = image, x = year-.3), asp = 2, size = 0.012) +
+#  geom_image(data = rank_data_filt %>% filter(year == max(year)), aes(image = image, x = year+.3), asp = 2, size = 0.012)
   
 p1
 
 # save
 ggsave(here("dog-breeds-2022-02-01","good_boys.png"), p1,
-       bg = "white", dpi = 320, width = 7.5, height = 7.5)
+       bg = "white", dpi = 400, units = "px", 
+       width = 3525, height = 2480)
 
