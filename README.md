@@ -86,3 +86,7 @@ Made with Python using pandas and plotnine, using jupyter (+ quorto extension).
 ## 2022-05-24 Womens Rugby
 Made with gt and gtExtras.
 ![](womens-rugby-2022-05-24/womens_rugby.png)
+
+## 2022-06-28 Gender Paygap
+The first image is a selection of my workplaces and how they are doing in terms of gender pay equality. 
+![](paygap-2022-06-28/workplaces.png)
