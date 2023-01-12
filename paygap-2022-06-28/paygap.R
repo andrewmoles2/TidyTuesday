@@ -86,3 +86,4 @@ ggsave(filename = "paygap-2022-06-28/workplaces.png", dpi = 320,
 
 ## Postcode mapping of uk
 #https://twitter.com/nrennie35/status/1541861448237842433
+

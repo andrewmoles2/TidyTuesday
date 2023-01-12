@@ -51,7 +51,8 @@ tempPlot <- ggplot(tempSummary, aes(x = year, y = yearlyAveTemp, group = city_na
     labs(y = "Yearly average temperature °C (Celsius)",
          colour = "City name") +
   scale_y_continuous(limits = c(10, 25), breaks = seq(10,25, by = 1)) +
-  scale_x_continuous(breaks = seq(1900, 2025, 10))
+  scale_x_continuous(breaks = seq(1900, 2025, 10)) +
+  theme(plot.title.position = 'plot')
 
 # rainfall
 rainPlot <- rainSummary %>% filter(year > 1900) %>%
@@ -77,7 +78,7 @@ ggsave(here('Australia-fires-2020-01-07', 'Auz_Rain&Temp.png'), auzFire_static,
 # adding in ggannimate
 rainPlotAnn <- rainSummary %>% filter(year > 1900) %>%
   ggplot(aes(x = year, y = yearlyRain, group = city_name)) + 
-  geom_line(aes(colour = city_name), size = 2, alpha = 0.85) +
+  geom_line(aes(colour = city_name), size = 1.5, alpha = 0.85) +
   #xlim(1900 , max(rainSummary$year)) +
   scale_color_brewer(palette = "Dark2") +
   labs(title = 'Yearly average rainfall (millimeters) in Australian cities', 
@@ -87,13 +88,15 @@ rainPlotAnn <- rainSummary %>% filter(year > 1900) %>%
        caption = "Australia Fires 2020-01-07 A.P.Moles") +
   scale_y_continuous(limits = c(0, 3500), breaks = seq(0, 3500, 500)) +
   scale_x_continuous(breaks = seq(1900, 2025, 10)) +
+  theme(plot.title.position = 'plot',
+        panel.grid.minor = element_blank()) +
   transition_reveal(year) +
   ease_aes('linear')
 
 rainAnnimate <- gganimate::animate(rainPlotAnn, width = 500, height = 440)
 
 tempPlotAnn <- ggplot(tempSummary, aes(x = year, y = yearlyAveTemp, group = city_name)) + 
-  geom_line(aes(color = city_name), size = 2, alpha = 0.85) +
+  geom_line(aes(color = city_name), size = 1.5, alpha = 0.85, show.legend = FALSE) +
   scale_color_brewer(palette = "Dark2") +
   labs(title = 'Average yearly temperature °C (Celsius) in Australian cities', 
        subtitle = 'Year: {as.integer(frame_along)}',
@@ -102,6 +105,8 @@ tempPlotAnn <- ggplot(tempSummary, aes(x = year, y = yearlyAveTemp, group = city
        caption = "Australia Fires 2020-01-07 A.P.Moles") +
   scale_y_continuous(limits = c(10, 25), breaks = seq(10,25, by = 1)) +
   scale_x_continuous(breaks = seq(1900, 2025, 10)) +
+  theme(plot.title.position = 'plot',
+        panel.grid.minor = element_blank()) +
   transition_reveal(year) +
   ease_aes('linear')
 
