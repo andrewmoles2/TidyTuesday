@@ -145,7 +145,7 @@ rain_t <- "<span style = 'font-size:16pt; font-family:Avenir;'>Yearly average ra
 <span style = 'color:#E6AB02;'>Sydney</span><br>
 Year: {as.integer(frame_along)}"
 
-rainPlotAnn2 <- rainSummary %>% filter(year > 1900) %>%
+rainPlotAnn2 <- rainSummary %>% filter(year >= 1910) %>%
   ggplot(aes(x = year, y = yearlyRain, group = city_name)) + 
   geom_line(aes(colour = city_name), size = 1.5, alpha = 0.85, show.legend = FALSE) +
   #xlim(1900 , max(rainSummary$year)) +
@@ -177,7 +177,8 @@ tempPlotAnn2 <- ggplot(tempSummary, aes(x = year, y = yearlyAveTemp, group = cit
   labs(title = temp_t,
        y = '',
        x = "",
-       caption = "Australia Fires 2020-01-07 A.P.Moles") +
+       # caption = "Australia Fires 2020-01-07 A.P.Moles"
+       ) +
   scale_y_continuous(limits = c(10, 25), breaks = seq(10,25, by = 1)) +
   scale_x_continuous(breaks = seq(1900, 2025, 10)) +
   theme(plot.title.position = 'plot',
