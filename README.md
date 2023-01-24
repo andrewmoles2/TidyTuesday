@@ -90,3 +90,7 @@ Made with gt and gtExtras.
 ## 2022-06-28 [Gender Paygap](paygap-2022-06-28)
 The first image is a selection of my workplaces and how they are doing in terms of gender pay equality. 
 ![](paygap-2022-06-28/workplaces.png)
+
+## 22-11-22 Museums
+Playing around with clustering and mapping. 
+![](museums-2022-11-22/kmean_museum.png)
