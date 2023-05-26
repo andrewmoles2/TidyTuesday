@@ -7,6 +7,7 @@ library(PostcodesioR)
 library(sf)
 library(rnaturalearth)
 library(rnaturalearthdata)
+library(patchwork)
 
 # import coolors function
 devtools::source_gist("ffa7f0bae82f9df88c6c1d9458d980a8")
@@ -58,8 +59,92 @@ museums$year_opened <- as.integer(strtrim(museums$year_opened, width = 4))
 
 # Read in grid shapefile
 gb_grid <- sf::read_sf(file.path(getwd(), "museums-2022-11-22/data/gb_grid/gb_grid.shp"))
+gb_post <- read_sf("museums-2022-11-22/data/postcode_polygons.gpkg")
 
+# Group data by post code
+# change this from subject matter to year categories
+# < 1800, 1800-1900, 1950, 1950-2000, 2000 > 
 
+museums %>% group_by(village_town_or_city) %>%
+  summarise(avg_year = mean(year_opened, na.rm = T)) %>%
+  arrange(avg_year)
+summary(museums$year_opened) # most are 1950-1990
+
+mus_post_agg <- museums %>%
+  filter(str_detect(year_closed, "9999")) %>%
+  select(museum_id, name_of_museum, postcode, subject_matter) %>%
+  mutate(
+    pc_area = str_extract(postcode, "[A-Z][A-Z]*"),
+    subjm = case_when(
+      str_detect(subject_matter, "-") ~ str_extract(subject_matter, "^.*?-"),
+      TRUE ~ subject_matter
+    ),
+    subjm = str_remove(subjm, "-"),
+    subjm = str_replace_all(subjm, "_", " ")
+  ) %>%
+  count(pc_area, subjm) %>%
+  group_by(pc_area) %>%
+  slice_max(order_by = n, n = 1) %>%
+  ungroup() %>%
+  add_count(pc_area, name = "ties") %>%
+  mutate(subjm = if_else(ties > 1, "Multiple", subjm))
+
+# join data to geo data
+mus_type <- gb_grid %>%
+  left_join(mus_post_agg)
+mus_type2 <- gb_post %>%
+  left_join(mus_post_agg)
+
+lvls <- sort(unique(mus_type$subjm))
+f1 <- "Avenir"
+pal <- coolors("https://coolors.co/669900-99cc33-ccee66-006699-3399cc-990066-cc3399-ff6600-ff9900-ffcc00")
+
+# plot - two types, grid and post code areas
+ggplot(mus_type) +
+  geom_sf(aes(fill = subjm), color = "white") +
+  scale_fill_manual(values = pal, breaks = lvls, drop = FALSE) +
+  guides(fill = guide_legend(title = "Subject Matter", override.aes = list(color = "grey95"))) +
+  coord_sf(clip = "off") +
+  theme_void(base_family = f1) +
+  theme(
+    plot.background = element_rect(fill = "grey95", color = NA),
+    legend.position = c(1.2, 0.6),
+    plot.margin = margin(0, 150, 0, 0)
+  ) +
+  plot_annotation(
+    title = "Most common museums by postal code area",
+    subtitle = "From about 3 400 museums that have opened since 1621 and are still open",
+    caption = "Source: Mapping Museums project · Graphic: Georgios Karamanis"
+  ) &
+  theme(
+    plot.background = element_rect(fill = "grey97", color = NA),
+    plot.title = element_text(family = f1, face = "bold", size = 20, margin = margin(10, 0, 5, 0)),
+    plot.subtitle = element_text(family = f1, size = 12),
+    plot.caption = element_text(family = f1, margin = margin(0, 0, 10, 0))
+  )
+
+ggplot(mus_type2) +
+  geom_sf(aes(fill = subjm), color = "white") +
+  scale_fill_manual(values = pal, breaks = lvls, drop = FALSE) +
+  guides(fill = guide_legend(title = "Subject Matter", override.aes = list(color = "grey95"))) +
+  coord_sf(clip = "off") +
+  theme_void(base_family = f1) +
+  theme(
+    plot.background = element_rect(fill = "grey95", color = NA),
+    legend.position = c(1.2, 0.6),
+    plot.margin = margin(0, 150, 0, 0)
+  ) +
+  plot_annotation(
+    title = "Most common museums by postal code area",
+    subtitle = "From about 3 400 museums that have opened since 1621 and are still open",
+    caption = "Source: Mapping Museums project · Graphic: Georgios Karamanis"
+  ) &
+  theme(
+    plot.background = element_rect(fill = "grey97", color = NA),
+    plot.title = element_text(family = f1, face = "bold", size = 20, margin = margin(10, 0, 5, 0)),
+    plot.subtitle = element_text(family = f1, size = 12),
+    plot.caption = element_text(family = f1, margin = margin(0, 0, 10, 0))
+  )
 
 # using natural earth to visualise dep index
 # add in labels for cities with highest avg dep index, and adjust colours and look

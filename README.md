@@ -83,6 +83,12 @@ Attempt at text mining sentiments from hidden gems reviews
 Made with Python using pandas and plotnine, using jupyter (+ quorto extension).
 ![](eurovision-2022-05-17/eurovision.png)
 
+The rest are made with R, trying out various things like adding images (flags), and using maps
+![](eurovision-2022-05-17/eurovision_winners.png)
+![](eurovision-2022-05-17/winners_map.png)
+![](eurovision-2022-05-17/ranking_map.png)
+![](eurovision-2022-05-17/eurovision_maps.png)
+
 ## 2022-05-24 Womens Rugby
 Made with gt and gtExtras.
 ![](womens-rugby-2022-05-24/womens_rugby.png)
