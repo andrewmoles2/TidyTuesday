@@ -99,30 +99,30 @@ ggplot(winners, aes(year, total_points, country = flag_emoji)) +
 
 # same but cleaner and annotated
 png(filename = paste0(path, "eurovision_winners.png"), 
-    width = 3750, height = 3508, res = 340)
-ggplot(winners, aes(year, total_points, country = flag_emoji)) +
-  geom_bar(stat = "identity", width = 0.05) +
-  geom_flag() +
-  coord_flip() +
+    width = 4000, height = 4000, res = 340, pointsize = 14)
+ggplot(winners, aes(year, total_points)) +
+  geom_segment(aes(x = year, xend = year, y = 0, yend = total_points)) +
+  geom_flag(aes(country = flag_emoji)) + 
   geom_text(aes(label = winner_text),
             hjust = -0.1, vjust = 0.15, angle = 0,
             family = "Avenir", size = 3) +
-  scale_y_continuous(limits = c(0, 1100)) +
-  labs(x = "Year", y = "Points",
+  coord_flip() +
+  scale_y_continuous(limits = c(0, 1000)) +
+  labs(x = "", y = "",
        title = "Eurovision winners: 1970 - 2022") +
   # add annotation information
-  annotate(geom = "text", x = 1989, y = 1000, size = 3,
+  annotate(geom = "text", x = 1989, y = 975, size = 3,
            label = "1989 winners Yugoslavia\n removed due to no flag",
            family = "Avenir") +
   annotate(geom = "curve", x = 1989, y = 925, xend = 1989, yend = 300, 
            curvature = -0.2, colour = "forestgreen") +
-  annotate(geom = "text", x = 2020, y = 1000, size = 3,
+  annotate(geom = "text", x = 2020, y = 975, size = 3,
            label = "No competition in 2020\n due to COVID-19",
            family = "Avenir") +
   annotate(geom = "curve", x = 2020, y = 925, xend = 2020, yend = 500, 
-           curvature = 0.05, colour = "forestgreen") +
-  theme_minimal(base_family = "Avenir", base_size = 14) +
-  theme(plot.title.position = "plot") 
+           curvature = 0.035, colour = "forestgreen") +
+  theme_minimal(base_family = "Avenir", base_size = 16) +
+  theme(plot.title.position = "plot")
 dev.off()
 
 
