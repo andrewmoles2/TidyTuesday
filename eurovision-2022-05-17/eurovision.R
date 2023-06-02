@@ -208,3 +208,30 @@ ggsave(filename = paste0(path, "ranking_map.png"), ranking_map, bg = "white",
        width = 4000, height = 3508, units = "px", dpi = 400)
 ggsave(filename = paste0(path, "eurovision_maps.png"), eurovision_maps, bg = "white",
        width = 5000, height = 3508, units = "px", dpi = 320)
+
+# try making one of the maps interactive ----
+library(ggiraph)
+
+int_map <- eurovision_rankings_map %>%
+  mutate(ranking_text = paste0(region, ": average final ranking of ", round(average_rank, 2))) %>%
+  ggplot(aes(long, lat, group = group, fill = average_rank)) +
+  geom_polygon_interactive(aes(data_id = group, tooltip = ranking_text),
+                           colour = "grey80", linewidth = 0.15) +
+  scale_fill_continuous(trans = 'reverse',
+                        low = pal[1], high = pal[2]) +
+  #guides(fill = "none") +
+  labs(title = "What are the average final ranking of countries?") +
+  theme_map(base_size = 16, 
+            base_family = "Avenir") +
+  coord_sf()
+
+css_default_hover <- girafe_css_bicolor(primary = "#E2DBAA", secondary = "#ABB3E2")
+set_girafe_defaults(opts_hover = opts_hover(css = css_default_hover))
+
+x <- girafe(ggobj = int_map, fonts = list("Arial"),
+            options = list(opts_toolbar(position = "bottom")))
+x
+
+
+
+
