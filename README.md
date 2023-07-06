@@ -97,6 +97,10 @@ Made with gt and gtExtras.
 The first image is a selection of my workplaces and how they are doing in terms of gender pay equality. 
 ![](paygap-2022-06-28/workplaces.png)
 
-## 22-11-22 Museums
+## 2022-11-22 Museums
 Playing around with clustering and mapping. 
 ![](museums-2022-11-22/kmean_museum.png)
+
+## 2023-04-25 London Marathon
+![](london-marathon-2023-04-25/men_winners.png)
+![](london-marathon-2023-04-25/women_winners.png)
