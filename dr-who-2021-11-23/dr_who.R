@@ -219,6 +219,7 @@ df_who %>%
         panel.grid.minor = element_line(colour = "grey80"),
         axis.ticks = element_blank()) -> by_doctor)
 
+
 # combine plots ----
 (by_time <- (specials_plot /  episodes_plot) + 
   plot_annotation(title = "Dr Who specials and episodes IMDB rating over time",
