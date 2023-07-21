@@ -97,8 +97,14 @@ Made with gt and gtExtras.
 The first image is a selection of my workplaces and how they are doing in terms of gender pay equality. 
 ![](paygap-2022-06-28/workplaces.png)
 
-The second image is a regional map of how each area is doing in terms of gender pay equality
+The second image is a regional map of how each area is doing in terms of gender pay equality. This is an aggregate of all years
 ![](paygap-2022-06-28/median_pay_diff_postcode.png)
+
+The third image shows gender pay equality per year
+![](paygap-2022-06-28/median_pay_diff_postcode_year.png)
+
+Finally, we have a gif showing the change per year
+![](paygap-2022-06-28/paygap.gif)
 
 ## 2022-11-22 Museums
 Playing around with clustering and mapping. 

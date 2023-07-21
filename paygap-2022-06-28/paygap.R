@@ -1,3 +1,4 @@
+# load libs ----
 library(tidyverse)
 library(lubridate)
 library(geomtextpath)
@@ -9,8 +10,9 @@ library(rnaturalearthdata)
 library(ggdist)
 library(patchwork)
 library(ggtext)
+library(here)
 
-# fetch a few cool fonts
+# fetch a few cool fonts ----
 font_add_google(c("Fira Code", "Source Code Pro",
                 "Baloo 2", "MuseoModerno"))
 showtext_opts(dpi = 300)
@@ -20,17 +22,13 @@ f2 <- "Source Code Pro"
 f3 <- "Baloo 2"
 f4 <- "MuseoModerno"
 
-# load in data
+# load in data ----
 paygap <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-06-28/paygap.csv')
 SIC_codes <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-06-28/SIC07_CH_condensed_list_en.csv')
 
 glimpse(paygap)
 
-# Two visualisations
-# my work places over the years 
-# postcode mapping of uk
-
-# viz of places I have worked
+# viz of places I have worked----
 my_unis <- c("London School Of Economics & Political Science", 
              "LONDON SCHOOL OF ECONOMICS & POLITICAL SCIENCE", 
              "LONDON SCHOOL OF ECONOMICS AND POLITICAL SCIENCE", "Birkbeck", 
@@ -84,15 +82,15 @@ workplaces %>%
 ggsave(filename = "paygap-2022-06-28/workplaces.png", dpi = 320,
        units = "px", width = 3500, height = 2500, bg = "white")
 
-## Postcode mapping of uk
+## Postcode mapping of uk----
 #https://twitter.com/nrennie35/status/1541861448237842433
-
 
 # Read in grid shapefile
 gb_grid <- sf::read_sf(file.path(getwd(), "museums-2022-11-22/data/gb_grid/gb_grid.shp"))
 gb_post <- read_sf("museums-2022-11-22/data/postcode_polygons.gpkg")
 
-paygap_sic <- left_join(paygap, SIC_codes, by = c("sic_codes" = "SIC Code"))
+paygap_sic <- left_join(paygap, SIC_codes, by = c("sic_codes" = "SIC Code")) %>%
+  mutate(year = year(date_submitted))
 
 # Option to do TA on description as per Julia Silge
 library(tidytext)
@@ -104,12 +102,17 @@ paygap_token <- paygap_sic %>%
 
 paygap_prep <- paygap_token %>%
   select(employer_name, post_code, diff_mean_hourly_percent, 
-         diff_median_hourly_percent, word) %>%
+         diff_median_hourly_percent, word, year) %>%
   mutate(pc_area = str_extract(post_code, "[A-Z][A-Z]*")) %>%
   filter(!word %in% c("activities", "n.e.c", "general", "non"))
 
 paygap_agg <- paygap_prep %>%
   group_by(pc_area) %>%
+  summarise(avg_diff_mean_hour = mean(diff_mean_hourly_percent, na.rm = TRUE),
+            avg_diff_median_hour = median(diff_median_hourly_percent, na.rm = TRUE))
+
+paygap_agg_year <- paygap_prep %>%
+  group_by(pc_area, year) %>%
   summarise(avg_diff_mean_hour = mean(diff_mean_hourly_percent, na.rm = TRUE),
             avg_diff_median_hour = median(diff_median_hourly_percent, na.rm = TRUE))
 
@@ -124,13 +127,16 @@ paygap_sic_agg <- paygap_prep %>%
   add_count(pc_area, name = "ties") %>%
   mutate(word = if_else(ties > 1, "Multiple", word))
 
-# join data to geo data
+# join data to geo data - average over all years
 paygap_type <- gb_grid %>%
   left_join(paygap_sic_agg)
 paygap_type2 <- gb_post %>%
   left_join(paygap_sic_agg)
 paygap_type3 <- gb_post %>%
   left_join(paygap_agg)
+# with year data
+paygap_type4 <- gb_post %>%
+  left_join(paygap_agg_year)
 
 # plot - two types, grid and post code areas
 # import coolors function
@@ -158,7 +164,7 @@ scales::show_col(grad_pal)
 (median_diff_post <- ggplot(paygap_type3) +
   geom_sf(aes(fill = avg_diff_median_hour), colour = "white") +
   scale_fill_gradient(low = grad_pal[1], high = grad_pal[3]) +
-  guides(fill = guide_legend(title = "Average median difference\n in pay per hour", override.aes = list(color = "grey95"))) +
+  guides(fill = guide_legend(title = "Average median difference\nin pay per hour", override.aes = list(color = "grey95"))) +
   coord_sf(clip = "off") +
   theme_void(base_family = f1) +
   #theme(
@@ -168,7 +174,7 @@ scales::show_col(grad_pal)
   #) +
   plot_annotation(
     title = stringr::str_wrap('Difference in median men and womens pay by postal code area', 37),
-    subtitle = "Above 0 indicates men are paid more, 0 indicates equality",
+    subtitle = "Average difference from 2017-2022\nAbove 0 indicates men are paid more, 0 indicates equality",
     caption = "Source: gender-pay-gap.service.gov.uk · Graphic: Andrew Moles"
   ) &
   theme(
@@ -181,5 +187,84 @@ scales::show_col(grad_pal)
   ))
 
 ggsave("paygap-2022-06-28/median_pay_diff_postcode.png", median_diff_post, 
-       dpi = 320, units = "px", width = 2500, height = 3000#, bg = "grey97"
+       dpi = 320, units = "px", width = 2500, height = 3000, device = ragg::agg_png
        )
+
+# plot change over years
+paygap_type4 %>%
+  filter(!is.na(year)) %>%
+  ggplot() +
+  geom_sf(aes(fill = avg_diff_median_hour), colour = "white") +
+  scale_fill_gradient(low = grad_pal[1], high = grad_pal[3]) +
+  guides(fill = guide_legend(title = "Average median\ndifference in\npay per hour", override.aes = list(color = "grey95"))) +
+  facet_wrap(vars(year)) +
+  coord_sf(clip = "off") +
+  theme_void(base_family = f1) +
+  plot_annotation(
+    title = stringr::str_wrap('Difference in median men and womens pay by postal code area between 2017-2022', 37),
+    subtitle = "Above 0 indicates men are paid more, 0 indicates equality",
+    caption = "Source: gender-pay-gap.service.gov.uk · Graphic: Andrew Moles"
+  ) &
+  theme(
+    plot.background = element_rect(fill = "grey97", color = NA),
+    legend.position = c(1.2, 0.6),
+    plot.margin = margin(0, 70, 5, 1),
+    plot.title = element_text(family = f1, face = "bold", size = 20, margin = margin(10, 0, 5, 0)),
+    plot.subtitle = element_text(family = f1, size = 12),
+    plot.caption = element_text(family = f1, size = 10, hjust = 0)
+  ) -> median_diff_post_year
+median_diff_post_year
+
+ggsave("paygap-2022-06-28/median_pay_diff_postcode_year.png", median_diff_post_year, 
+       dpi = 320, units = "px", width = 2500, height = 3000, device = ragg::agg_png
+)
+
+
+# a plot for each year
+years <- seq(2017, 2022)
+
+for (i in years) {
+  p <- paygap_type4 %>%
+    filter(!is.na(year)) %>%
+    filter(year == i) %>%
+    ggplot() +
+    geom_sf(aes(fill = avg_diff_median_hour), colour = "white") +
+    scale_fill_gradient(low = grad_pal[1], high = grad_pal[3]) +
+    guides(fill = guide_legend(title = "Average median\ndifference in\npay per hour", override.aes = list(color = "grey95"))) +
+    coord_sf(clip = "off") +
+    theme_void(base_family = f1) +
+    plot_annotation(
+      title = stringr::str_wrap('Yearly difference in median men and womens pay by postal code area', 37),
+      subtitle = paste0("Above 0 indicates men are paid more, 0 indicates equality\n", "Year: ",i),
+      caption = "Source: gender-pay-gap.service.gov.uk · Graphic: Andrew Moles"
+    ) &
+    theme(
+      plot.background = element_rect(fill = "grey97", color = NA),
+      legend.position = c(1.2, 0.6),
+      plot.margin = margin(0, 70, 5, 1),
+      plot.title = element_text(family = f1, face = "bold", size = 20, margin = margin(10, 0, 5, 0)),
+      plot.subtitle = element_text(family = f1, size = 12),
+     plot.caption = element_text(family = f1, size = 10, hjust = 0)
+    )
+
+  print(p)
+
+  ggsave(here("paygap-2022-06-28", paste0("paygap_plot_", i, ".png")), dpi = 320, 
+       units = "px", width = 2500, height = 3000, device = ragg::agg_png
+  )
+
+}
+
+library(magick)
+
+list.files(
+  path = here("paygap-2022-06-28"),
+  full.names = TRUE,
+  pattern = "paygap_plot"
+) %>%
+  lapply(., image_read) %>%
+  image_join() %>%
+  image_animate(fps = 1) %>%
+  image_write(path = here("paygap-2022-06-28", "paygap.gif"))
+
+
