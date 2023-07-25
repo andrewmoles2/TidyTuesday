@@ -37,8 +37,8 @@ accuracy_summary_wide <- pivot_wider(accuracy_summary,
                                      values_from = accurcy)
 
 title <- "Are GPT detectors biased against non-native English writers?<br>
-<span style = 'font-size:14pt;'>Generative language models designed to detect other 
-generative language models<br> are less accurate at detecting <span style = 'color:#538D7D;'>non-native English</span> speakers to 
+<span style = 'font-size:14pt;'>Tools designed to detect generative language models (GPT)
+are less accurate<br> at detecting <span style = 'color:#538D7D;'>non-native English</span> speakers to 
 <span style = 'color:#8D5364;'>native English</span> speakers</span>"
 
 plot_text <- "<b>GPT Detectors Are Biased Against Non-Native English Writers<br> 
@@ -70,17 +70,17 @@ label <- accuracy_summary_wide$fancy_label
 # plot ---
 
 detectors_plot <- ggplot(accuracy_summary_wide) +
-  geom_segment(aes(x = detector, xend = detector,
+  geom_segment(aes(x = reorder(detector, `Non-Native English`), xend = detector,
                    y = `Non-Native English`, yend = `Native English`),
                colour = "grey30", linewidth = 1.2) +
-  geom_point(aes(x = detector, y = `Non-Native English`), 
+  geom_point(aes(x = reorder(detector, `Non-Native English`), y = `Non-Native English`), 
              colour = "#538D7D", size = 5) +
-  geom_point(aes(x = detector, y = `Native English`), 
+  geom_point(aes(x = reorder(detector, `Non-Native English`), y = `Native English`), 
              colour = "#8D5364", size = 5) +
   geom_image(aes(x = detector, y = -0.05, image = logo),
              asp = 1.3) +
   annotate("richtext",
-    x = 2, y = 0.005, label = plot_text, vjust = 0.5, hjust = 0,
+    x = 5.5, y = 0.005, label = plot_text, vjust = 0.5, hjust = 0,
     family = "Avenir", fill = NA, label.color = NA, size = 3.5,
     label.padding = grid::unit(rep(0, 4), "pt")
   ) +
