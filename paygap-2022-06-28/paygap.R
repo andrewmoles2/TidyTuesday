@@ -196,7 +196,7 @@ paygap_type4 %>%
   filter(!is.na(year)) %>%
   ggplot() +
   geom_sf(aes(fill = avg_diff_median_hour), colour = "white") +
-  scale_fill_gradient(low = grad_pal[1], high = grad_pal[3]) +
+  scale_fill_gradient2(low = grad_pal[1], mid = "#CBBFBD", high = grad_pal[3], midpoint = 10) +
   guides(fill = guide_legend(title = "Average median\ndifference in\npay per hour", override.aes = list(color = "grey95"))) +
   facet_wrap(vars(year), ncol = 3) +
   coord_sf(clip = "off") +
@@ -231,7 +231,7 @@ for (i in years) {
     filter(year == i) %>%
     ggplot() +
     geom_sf(aes(fill = avg_diff_median_hour), colour = "white") +
-    scale_fill_gradient(low = grad_pal[1], high = grad_pal[3]) +
+    scale_fill_gradient2(low = grad_pal[1], mid = "#CBBFBD", high = grad_pal[3], midpoint = 10) +
     guides(fill = guide_legend(title = "Average median\ndifference in\npay per hour", override.aes = list(color = "grey95"))) +
     coord_sf(clip = "off") +
     theme_void(base_family = f1) +
