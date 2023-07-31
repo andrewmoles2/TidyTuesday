@@ -23,7 +23,8 @@ f3 <- "Baloo 2"
 f4 <- "MuseoModerno"
 
 # load in data ----
-paygap <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-06-28/paygap.csv')
+paygap <- readr::read_csv("paygap-2022-06-28/data/paygap.csv")
+#paygap <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-06-28/paygap.csv')
 SIC_codes <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-06-28/SIC07_CH_condensed_list_en.csv')
 
 glimpse(paygap)
@@ -174,7 +175,7 @@ scales::show_col(grad_pal)
   #) +
   plot_annotation(
     title = stringr::str_wrap('Difference in median men and womens pay by postal code area', 37),
-    subtitle = "Average difference from 2017-2022\nAbove 0 indicates men are paid more, 0 indicates equality",
+    subtitle = "Average difference from 2017-2023\nAbove 0 indicates men are paid more, 0 indicates equality",
     caption = "Source: gender-pay-gap.service.gov.uk · Graphic: Andrew Moles"
   ) &
   theme(
@@ -197,17 +198,17 @@ paygap_type4 %>%
   geom_sf(aes(fill = avg_diff_median_hour), colour = "white") +
   scale_fill_gradient(low = grad_pal[1], high = grad_pal[3]) +
   guides(fill = guide_legend(title = "Average median\ndifference in\npay per hour", override.aes = list(color = "grey95"))) +
-  facet_wrap(vars(year)) +
+  facet_wrap(vars(year), ncol = 3) +
   coord_sf(clip = "off") +
   theme_void(base_family = f1) +
   plot_annotation(
-    title = stringr::str_wrap('Difference in median men and womens pay by postal code area between 2017-2022', 37),
+    title = stringr::str_wrap('Difference in median men and womens pay by postal code area between 2017-2023', 37),
     subtitle = "Above 0 indicates men are paid more, 0 indicates equality",
     caption = "Source: gender-pay-gap.service.gov.uk · Graphic: Andrew Moles"
   ) &
   theme(
     plot.background = element_rect(fill = "grey97", color = NA),
-    legend.position = c(1.2, 0.6),
+    legend.position = c(0.7, 0.18), legend.direction = "vertical",
     plot.margin = margin(0, 70, 5, 1),
     plot.title = element_text(family = f1, face = "bold", size = 20, margin = margin(10, 0, 5, 0)),
     plot.subtitle = element_text(family = f1, size = 12),
@@ -221,7 +222,8 @@ ggsave("paygap-2022-06-28/median_pay_diff_postcode_year.png", median_diff_post_y
 
 
 # a plot for each year
-years <- seq(2017, 2022)
+year_range <- range(paygap_type4$year, na.rm = TRUE)
+years <- seq(year_range[1], year_range[2])
 
 for (i in years) {
   p <- paygap_type4 %>%
@@ -240,7 +242,7 @@ for (i in years) {
     ) &
     theme(
       plot.background = element_rect(fill = "grey97", color = NA),
-      legend.position = c(1.2, 0.6),
+      legend.position = c(1.2, 0.6), legend.direction = "vertical",
       plot.margin = margin(0, 70, 5, 1),
       plot.title = element_text(family = f1, face = "bold", size = 20, margin = margin(10, 0, 5, 0)),
       plot.subtitle = element_text(family = f1, size = 12),
