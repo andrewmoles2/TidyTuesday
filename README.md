@@ -117,3 +117,9 @@ Playing around with clustering and mapping.
 ## 2023-07-18 GPT Detectors
 Data for this week is based on [this article](https://arxiv.org/abs/2304.02819) about GPT detectors being biased
 ![](detectors-2023-07-18/AI_detectors.png)
+
+## 2023-07-11 [Global temperatures](global-temp-2023-07-11)
+
+![](global-temp-2023-07-11/temp_hist.png)
+
+
