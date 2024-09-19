@@ -5,7 +5,7 @@ library(fs)
 # data downloaded from https://gender-pay-gap.service.gov.uk/viewing/download
 
 # make fs file list
-pay_files <- fs::dir_ls(path = "paygap-2022-06-28/data/", 
+pay_files <- fs::dir_ls(path = "paygap-2022-06-28/data/raw_data/", 
                        glob = "*.csv")
 
 # use vroom to read and bind files

@@ -66,7 +66,7 @@ workplaces %>%
   geom_textpath(size = 5, lineend = "round", straight = TRUE, hjust = "auto",
                 text_smoothing = 30, family = f2, linemitre = 15, rich = TRUE) +
   scale_colour_identity() +
-  scale_y_continuous(limits = c(0, 25)) +
+  scale_y_continuous(limits = c(0, 30)) +
   labs(x = "", y = "", 
        title = "Difference in median men and womens pay for my previous employers<br>
        <span style = 'font-size:16pt;'>Above 0 indicates men are paid more, 0 indicates equality. My most recent employer,<br>
@@ -83,7 +83,7 @@ workplaces %>%
 ggsave(filename = "paygap-2022-06-28/workplaces.png", dpi = 320,
        units = "px", width = 3500, height = 2500, bg = "white")
 
-## Postcode mapping of uk----
+# Postcode mapping of uk----
 #https://twitter.com/nrennie35/status/1541861448237842433
 
 # Read in grid shapefile
@@ -175,7 +175,7 @@ scales::show_col(grad_pal)
   #) +
   plot_annotation(
     title = stringr::str_wrap('Difference in median men and womens pay by postal code area', 37),
-    subtitle = "Average difference from 2017-2023\nAbove 0 indicates men are paid more, 0 indicates equality",
+    subtitle = "Average difference from 2017-2024\nAbove 0 indicates men are paid more, 0 indicates equality",
     caption = "Source: gender-pay-gap.service.gov.uk · Graphic: Andrew Moles"
   ) &
   theme(
@@ -202,13 +202,13 @@ paygap_type4 %>%
   coord_sf(clip = "off") +
   theme_void(base_family = f1) +
   plot_annotation(
-    title = stringr::str_wrap('Difference in median men and womens pay by postal code area between 2017-2023', 37),
+    title = stringr::str_wrap('Difference in median men and womens pay by postal code area between 2017-2024', 37),
     subtitle = "Above 0 indicates men are paid more, 0 indicates equality",
     caption = "Source: gender-pay-gap.service.gov.uk · Graphic: Andrew Moles"
   ) &
   theme(
     plot.background = element_rect(fill = "grey97", color = NA),
-    legend.position = c(0.7, 0.18), legend.direction = "vertical",
+    legend.position = c(0.9, 0.18), legend.direction = "vertical",
     plot.margin = margin(0, 70, 5, 1),
     plot.title = element_text(family = f1, face = "bold", size = 20, margin = margin(10, 0, 5, 0)),
     plot.subtitle = element_text(family = f1, size = 12),
@@ -269,4 +269,56 @@ list.files(
   image_animate(fps = 1) %>%
   image_write(path = here("paygap-2022-06-28", "paygap.gif"))
 
+# interactive image of gender pay gap for a single year - pull latest year ----
+library(ggiraph)
+
+# https://www.doogal.co.uk/PostcodeDistricts
+postcode_info <- read_csv("paygap-2022-06-28/data/Postcode_districts.csv")
+
+postcode_info <- postcode_info %>%
+  mutate(pc_area = gsub("[[:digit:]]+", "", Postcode)) %>%
+  select(pc_area, Postcodes, Population, Region, `UK region`) %>%
+  group_by(pc_area, Region, `UK region`) %>%
+  summarise(n_postcodes = sum(Postcodes, na.rm = TRUE), 
+            n_pop = sum(Population, na.rm = TRUE))
+
+m_year <- max(paygap_type4$year, na.rm = TRUE)
+
+paygap_type4 <- paygap_type4 %>%
+  left_join(postcode_info, by = join_by(pc_area))
+
+paygap_type4 %>%
+  filter(!is.na(year)) %>%
+  filter(year == m_year) %>%
+  mutate(plot_text = paste0("PostCode area: ", pc_area, " has average median difference in pay of ", round(avg_diff_mean_hour, 2))) %>%
+  ggplot() +
+  ggiraph::geom_sf_interactive(aes(fill = avg_diff_median_hour,
+                                   data_id = pc_area,
+                                   tooltip = plot_text), 
+                               colour = "white",
+                               hover_nearest = TRUE) +
+  #geom_sf(aes(fill = avg_diff_median_hour), colour = "white") +
+  scale_fill_gradient2(low = grad_pal[1], mid = "#CBBFBD", high = grad_pal[3], midpoint = 10) +
+  guides(fill = guide_legend(title = "Average median\ndifference in\npay per hour", override.aes = list(color = "grey95"))) +
+  coord_sf(clip = "off") +
+  theme_void(base_family = f1) +
+  plot_annotation(
+    title = stringr::str_wrap('Yearly difference in median men and womens pay by postal code area', 37),
+    subtitle = paste0("Above 0 indicates men are paid more, 0 indicates equality\n", "Year: ",i),
+    caption = "Source: gender-pay-gap.service.gov.uk · Graphic: Andrew Moles"
+  ) &
+  theme(
+    plot.background = element_rect(fill = "grey97", color = NA),
+    legend.position = c(1.2, 0.6), legend.direction = "vertical",
+    plot.margin = margin(0, 70, 5, 1),
+    plot.title = element_text(family = f1, face = "bold", size = 20, margin = margin(10, 0, 5, 0)),
+    plot.subtitle = element_text(family = f1, size = 12),
+    plot.caption = element_text(family = f1, size = 10, hjust = 0)
+  ) -> pay_int
+
+css_default_hover <- girafe_css_bicolor(primary = "#E2DBAA", secondary = "#ABB3E2")
+set_girafe_defaults(opts_hover = opts_hover(css = css_default_hover))
+
+girafe(ggobj = pay_int, fonts = list("Arial"),
+       options = list(opts_toolbar(position = "bottom")))
 

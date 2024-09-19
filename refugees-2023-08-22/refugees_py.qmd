@@ -1,0 +1,54 @@
+
+---
+title: "Refugees"
+format:
+  html:
+    code-fold: true
+jupyter: python3
+---
+
+## 1. Install 
+```{python}
+pip install lets-plot
+```
+
+```{python}
+pip install palmerpenguins
+```
+
+## 2. Import lets-plot
+
+```{python} 
+import pandas as pd
+from palmerpenguins import load_penguins
+from lets_plot import *
+
+LetsPlot.setup_html()
+``` 
+
+## 3. Load data
+
+```{python}
+refugees = pd.read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-08-22/population.csv')
+refugees.head()
+``` 
+
+```{python}
+list(refugees.columns)
+```
+
+
+## 4. Make a plot
+
+```{python}
+(
+    ggplot(penguins, mapping = aes(x = 'flipper_length_mm', y = 'body_mass_g', colour = 'species')) + geom_point(shape = 15, alpha = 0.8) 
+    + labs(
+        title = 'Penguin body mass vs flipper length',
+        x = 'Flipper length (mm)',
+        y = 'Body mass (g)'
+    ) 
+    + theme_minimal()
+)
+
+```
